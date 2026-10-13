@@ -202,7 +202,7 @@ class _SplashScreenState extends State<SplashScreen>
                   AppSpacing.vGap2, // 8px margin
                   // Brand Subtitle / Tagline
                   Text(
-                    'Empowering Next-Gen Learning',
+                    AppConstants.appTagline,
                     style: AppTypography.bodyLg.copyWith(
                       color: AppColors.textSecondary,
                       letterSpacing: 0.4,
