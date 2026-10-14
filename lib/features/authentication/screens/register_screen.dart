@@ -6,8 +6,6 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/router/route_names.dart';
 
-/// Registration screen — kids-friendly design.
-/// Parents fill this in to create their child's account.
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -25,7 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _passwordVisible = false;
   bool _isLoading = false;
 
-  static const List<String> _levels = ['Nursery', 'Lower KG', 'Upper KG'];
+  static const _levels = ['Nursery', 'Lower KG', 'Upper KG'];
 
   @override
   void dispose() {
@@ -35,7 +33,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _onSignUp() async {
+  Future<void> _onSignUp() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
     // TODO: connect to AuthBloc
@@ -51,41 +49,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFBBDEFB), // light blue top
-              Color(0xFFFFE0B2), // warm peach bottom
-            ],
+            colors: [Color(0xFFBBDEFB), Color(0xFFFFE0B2)],
           ),
         ),
         child: SafeArea(
           child: Stack(
             children: [
-              // Decorative blur circles
               Positioned(
                 top: -30,
                 left: -30,
-                child: _BlurCircle(
-                    color: const Color(0xFF90CAF9), size: 180),
+                child: _BlurCircle(color: const Color(0xFF90CAF9), size: 180),
               ),
               Positioned(
                 bottom: -40,
                 right: -40,
-                child: _BlurCircle(
-                    color: const Color(0xFFFFCC80), size: 200),
+                child: _BlurCircle(color: const Color(0xFFFFCC80), size: 200),
               ),
-
-              // Content
               Center(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   child: Column(
                     children: [
-                      // Top mascot / logo area
                       const Text('🌟', style: TextStyle(fontSize: 52)),
                       const SizedBox(height: 4),
-
-                      // White card
                       Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
@@ -105,14 +91,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Header
                               Center(
                                 child: Column(
                                   children: [
                                     Text(
                                       'Create Account 🎒',
-                                      style: AppTypography.kidsDisplayLg
-                                          .copyWith(
+                                      style: AppTypography.kidsDisplayLg.copyWith(
                                         fontSize: 22,
                                         fontWeight: FontWeight.w800,
                                         color: Colors.black87,
@@ -130,12 +114,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ],
                                 ),
                               ),
-
                               const SizedBox(height: 24),
-
-                              // Full Name
-                              _FieldLabel(
-                                  label: "Child's Full Name", emoji: '👦'),
+                              _FieldLabel(label: "Child's Full Name", emoji: '👦'),
                               const SizedBox(height: 6),
                               _KidsTextField(
                                 controller: _nameController,
@@ -145,29 +125,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     ? 'Please enter a name'
                                     : null,
                               ),
-
                               const SizedBox(height: 16),
-
-                              // Level / Grade
-                              _FieldLabel(
-                                  label: 'Learning Level', emoji: '📚'),
+                              _FieldLabel(label: 'Learning Level', emoji: '📚'),
                               const SizedBox(height: 6),
                               _KidsDropdown(
                                 value: _selectedLevel,
                                 items: _levels,
                                 hint: 'Select a level',
-                                onChanged: (v) =>
-                                    setState(() => _selectedLevel = v),
+                                onChanged: (v) => setState(() => _selectedLevel = v),
                                 validator: (_) => _selectedLevel == null
                                     ? 'Please select a level'
                                     : null,
                               ),
-
                               const SizedBox(height: 16),
-
-                              // Email
-                              _FieldLabel(
-                                  label: "Parent's Email", emoji: '📧'),
+                              _FieldLabel(label: "Parent's Email", emoji: '📧'),
                               const SizedBox(height: 6),
                               _KidsTextField(
                                 controller: _emailController,
@@ -178,18 +149,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   if (v == null || v.trim().isEmpty) {
                                     return 'Please enter an email';
                                   }
-                                  if (!v.contains('@')) {
-                                    return 'Enter a valid email address';
-                                  }
+                                  if (!v.contains('@')) return 'Enter a valid email';
                                   return null;
                                 },
                               ),
-
                               const SizedBox(height: 16),
-
-                              // Password
-                              _FieldLabel(
-                                  label: 'Password', emoji: '🔒'),
+                              _FieldLabel(label: 'Password', emoji: '🔒'),
                               const SizedBox(height: 6),
                               _KidsTextField(
                                 controller: _passwordController,
@@ -222,10 +187,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   color: AppColors.textSecondary,
                                 ),
                               ),
-
                               const SizedBox(height: 24),
-
-                              // Sign Up button
                               GestureDetector(
                                 onTap: _isLoading ? null : _onSignUp,
                                 child: AnimatedContainer(
@@ -234,14 +196,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   height: 56,
                                   decoration: BoxDecoration(
                                     color: _isLoading
-                                        ? AppColors.orange500
-                                            .withValues(alpha: 0.7)
+                                        ? AppColors.orange500.withValues(alpha: 0.7)
                                         : AppColors.orange500,
                                     borderRadius: BorderRadius.circular(28),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: AppColors.orange500
-                                            .withValues(alpha: 0.4),
+                                        color: AppColors.orange500.withValues(alpha: 0.4),
                                         blurRadius: 14,
                                         offset: const Offset(0, 5),
                                       ),
@@ -258,14 +218,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             ),
                                           )
                                         : Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                            mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
                                               Text(
                                                 'Sign Up',
-                                                style: AppTypography
-                                                    .kidsHeadlineLg
-                                                    .copyWith(
+                                                style: AppTypography.kidsHeadlineLg.copyWith(
                                                   color: Colors.white,
                                                   fontWeight: FontWeight.w800,
                                                   fontSize: 16,
@@ -282,10 +239,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                                 ),
                               ),
-
                               const SizedBox(height: 18),
-
-                              // Login link
                               Center(
                                 child: GestureDetector(
                                   onTap: () => context.go(RouteNames.login),
@@ -299,8 +253,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       children: [
                                         TextSpan(
                                           text: 'Log In',
-                                          style: AppTypography.kidsBodyMd
-                                              .copyWith(
+                                          style: AppTypography.kidsBodyMd.copyWith(
                                             color: AppColors.orange500,
                                             fontWeight: FontWeight.w700,
                                             fontSize: 13,
@@ -311,22 +264,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                                 ),
                               ),
-
                               const SizedBox(height: 14),
-
-                              // Safe & Secure badge
                               Center(
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Container(
-                                        width: 32,
-                                        height: 1,
-                                        color: AppColors.borderVariant),
+                                    Container(width: 32, height: 1, color: AppColors.borderVariant),
                                     const SizedBox(width: 8),
-                                    Icon(Icons.verified_user_rounded,
-                                        size: 13,
-                                        color: AppColors.textSecondary),
+                                    Icon(Icons.verified_user_rounded, size: 13, color: AppColors.textSecondary),
                                     const SizedBox(width: 4),
                                     Text(
                                       'SAFE & SECURE',
@@ -336,10 +281,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       ),
                                     ),
                                     const SizedBox(width: 8),
-                                    Container(
-                                        width: 32,
-                                        height: 1,
-                                        color: AppColors.borderVariant),
+                                    Container(width: 32, height: 1, color: AppColors.borderVariant),
                                   ],
                                 ),
                               ),
@@ -359,11 +301,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 }
 
-// ── Shared sub-widgets ──────────────────────────────────────────────────────
-
 class _FieldLabel extends StatelessWidget {
   final String label;
   final String emoji;
+
   const _FieldLabel({required this.label, required this.emoji});
 
   @override
@@ -411,23 +352,18 @@ class _KidsTextField extends StatelessWidget {
       obscureText: obscureText,
       keyboardType: keyboardType,
       validator: validator,
-      style: AppTypography.kidsBodyMd.copyWith(
-        fontSize: 14,
-        color: Colors.black87,
-      ),
+      style: AppTypography.kidsBodyMd.copyWith(fontSize: 14, color: Colors.black87),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: AppTypography.kidsBodyMd.copyWith(
           fontSize: 14,
           color: AppColors.textSecondary,
         ),
-        prefixIcon: Icon(prefixIcon,
-            size: 18, color: AppColors.secondAccent),
+        prefixIcon: Icon(prefixIcon, size: 18, color: AppColors.secondAccent),
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: const Color(0xFFF8FAFC),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
@@ -446,8 +382,7 @@ class _KidsTextField extends StatelessWidget {
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide:
-              const BorderSide(color: Color(0xFFEF4444), width: 2),
+          borderSide: const BorderSide(color: Color(0xFFEF4444), width: 2),
         ),
       ),
     );
@@ -482,19 +417,13 @@ class _KidsDropdown extends StatelessWidget {
           color: AppColors.textSecondary,
         ),
       ),
-      style: AppTypography.kidsBodyMd.copyWith(
-        fontSize: 14,
-        color: Colors.black87,
-      ),
-      icon: const Icon(Icons.keyboard_arrow_down_rounded,
-          color: AppColors.textSecondary),
+      style: AppTypography.kidsBodyMd.copyWith(fontSize: 14, color: Colors.black87),
+      icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.textSecondary),
       decoration: InputDecoration(
-        prefixIcon: const Icon(Icons.school_rounded,
-            size: 18, color: AppColors.secondAccent),
+        prefixIcon: const Icon(Icons.school_rounded, size: 18, color: AppColors.secondAccent),
         filled: true,
         fillColor: const Color(0xFFF8FAFC),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
@@ -513,10 +442,7 @@ class _KidsDropdown extends StatelessWidget {
         ),
       ),
       items: items
-          .map((level) => DropdownMenuItem(
-                value: level,
-                child: Text(level),
-              ))
+          .map((l) => DropdownMenuItem(value: l, child: Text(l)))
           .toList(),
     );
   }
@@ -525,6 +451,7 @@ class _KidsDropdown extends StatelessWidget {
 class _BlurCircle extends StatelessWidget {
   final Color color;
   final double size;
+
   const _BlurCircle({required this.color, required this.size});
 
   @override
@@ -534,8 +461,10 @@ class _BlurCircle extends StatelessWidget {
       child: Container(
         width: size,
         height: size,
-        decoration:
-            BoxDecoration(shape: BoxShape.circle, color: color.withValues(alpha: 0.6)),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color.withValues(alpha: 0.6),
+        ),
       ),
     );
   }
