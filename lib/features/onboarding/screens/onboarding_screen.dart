@@ -109,11 +109,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         curve: Curves.easeInOut,
       );
     } else {
-      context.go(RouteNames.login);
+      context.go(RouteNames.register);
     }
   }
 
-  void _skip() => context.go(RouteNames.login);
+  void _skip() => context.go(RouteNames.register);
 
   void _onPageChanged(int index) => setState(() => _currentPage = index);
 
