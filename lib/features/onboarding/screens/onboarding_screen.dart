@@ -51,8 +51,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           'Fun lessons designed for Nursery, Lower KG, and Upper KG children with pictures, sounds, and games.',
       illustrationAsset: 'assets/images/onboarding_1.png',
       placeholderColor: const Color(0xFFDDE8F8),
-      topBadgeIcon: Icons.star_rounded,
-      bottomBadgeIcon: Icons.music_note_rounded,
+      topBadgeIcon: Icons.auto_stories_rounded,
+      bottomBadgeIcon: Icons.headphones_rounded,
     ),
     _OnboardingPage(
       title: 'Track Progress',
@@ -61,7 +61,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       illustrationAsset: 'assets/images/onboarding_2.png',
       placeholderColor: const Color(0xFFE8F5E9),
       topBadgeIcon: Icons.emoji_events_rounded,
-      bottomBadgeIcon: Icons.bar_chart_rounded,
+      bottomBadgeIcon: Icons.trending_up_rounded,
     ),
     _OnboardingPage(
       title: 'Excel in Your Exams',

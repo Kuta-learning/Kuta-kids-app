@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_spacing.dart'; // AppSpacing, AppRadius, AppElevation
+import '../../../core/constants/app_spacing.dart';
 
 /// The large rounded illustration card shown on each onboarding page.
-/// Features a top-right icon badge and a bottom-left icon badge, exactly
-/// as shown in the Figma design.
-///
-/// Replace [illustrationAsset] with your Figma-exported PNG.
-/// Until the asset is added, a styled color placeholder is shown.
+/// Has a top-right icon badge and a bottom-left icon badge overlapping
+/// the card edges, exactly as in the Figma design.
 class OnboardingIllustrationCard extends StatelessWidget {
   final String illustrationAsset;
   final Color placeholderColor;
@@ -28,7 +25,7 @@ class OnboardingIllustrationCard extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // Main illustration card
+        // ── Main illustration card ────────────────────────
         Container(
           width: double.infinity,
           decoration: BoxDecoration(
@@ -43,20 +40,20 @@ class OnboardingIllustrationCard extends StatelessWidget {
           ),
         ),
 
-        // Top-right floating icon badge
+        // ── Top-right floating badge ──────────────────────
         Positioned(
-          top: -(AppSpacing.space2),
-          right: -(AppSpacing.space2),
+          top: 12,
+          right: -8,
           child: _IconBadge(
             icon: topBadgeIcon,
             iconColor: AppColors.secondAccent,
           ),
         ),
 
-        // Bottom-left floating icon badge
+        // ── Bottom-left floating badge ────────────────────
         Positioned(
-          bottom: AppSpacing.space4,
-          left: -(AppSpacing.space2),
+          bottom: 16,
+          left: -8,
           child: _IconBadge(
             icon: bottomBadgeIcon,
             iconColor: AppColors.kgGreen,
@@ -71,17 +68,16 @@ class OnboardingIllustrationCard extends StatelessWidget {
       illustrationAsset,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
-        // Styled placeholder shown until real Figma illustrations are added
         return _IllustrationPlaceholder(
           color: placeholderColor,
-          icon: topBadgeIcon,
+          icon: bottomBadgeIcon,
         );
       },
     );
   }
 }
 
-/// Small white rounded square icon badge — floating decorator on the card.
+/// Small white rounded square floating icon badge.
 class _IconBadge extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
@@ -103,8 +99,8 @@ class _IconBadge extends StatelessWidget {
   }
 }
 
-/// Placeholder shown when illustration PNG asset is not yet added.
-/// Displays a large centered icon on the page's background color.
+/// Shown when illustration PNG has not been added yet.
+/// Uses a learning-relevant icon matching the page topic.
 class _IllustrationPlaceholder extends StatelessWidget {
   final Color color;
   final IconData icon;
@@ -119,20 +115,10 @@ class _IllustrationPlaceholder extends StatelessWidget {
     return Container(
       color: color,
       child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 80, color: AppColors.textSecondary.withValues(alpha: 0.4)),
-            const SizedBox(height: 12),
-            Text(
-              'Add illustration to\nassets/images/',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary.withValues(alpha: 0.5),
-              ),
-            ),
-          ],
+        child: Icon(
+          icon,
+          size: 80,
+          color: AppColors.textSecondary.withValues(alpha: 0.25),
         ),
       ),
     );
