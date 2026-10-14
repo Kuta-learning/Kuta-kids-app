@@ -89,7 +89,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
-    _bounceAnimation = Tween<double>(begin: 1.0, end: 1.08).animate(
+    _bounceAnimation = Tween<double>(begin: 1.0, end: 1.06).animate(
       CurvedAnimation(parent: _bounceController, curve: Curves.elasticOut),
     );
   }
@@ -122,6 +122,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   @override
   Widget build(BuildContext context) {
     final page = _pages[_currentPage];
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    // Card height: ~42% of screen height
+    final cardHeight = screenHeight * 0.42;
 
     return Scaffold(
       body: AnimatedContainer(
@@ -137,7 +140,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         child: SafeArea(
           child: Stack(
             children: [
-              // ── Decorative blurred circles ────────────
+              // Decorative blur circles
               Positioned(
                 top: -40,
                 right: -40,
@@ -146,12 +149,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               Positioned(
                 bottom: 80,
                 left: -60,
-                child: _BlurCircle(color: page.bgBottom, size: 240),
+                child: _BlurCircle(color: page.bgBottom, size: 220),
               ),
 
+              // Main layout
               Column(
                 children: [
-                  // Skip
+                  // Skip button
                   Align(
                     alignment: Alignment.centerRight,
                     child: Padding(
@@ -181,9 +185,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
                   const SizedBox(height: 8),
 
-                  // Illustration card
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                  // ── PageView with fixed height ──────────────
+                  SizedBox(
+                    height: cardHeight,
                     child: PageView.builder(
                       controller: _pageController,
                       onPageChanged: _onPageChanged,
@@ -191,17 +195,20 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       physics: const BouncingScrollPhysics(),
                       itemBuilder: (context, index) {
                         final p = _pages[index];
-                        return OnboardingIllustrationCard(
-                          illustrationAsset: p.illustrationAsset,
-                          cardColor: p.cardColor,
-                          badgeIcon: p.badgeIcon,
-                          badgeIconColor: p.badgeIconColor,
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: OnboardingIllustrationCard(
+                            illustrationAsset: p.illustrationAsset,
+                            cardColor: p.cardColor,
+                            badgeIcon: p.badgeIcon,
+                            badgeIconColor: p.badgeIconColor,
+                          ),
                         );
                       },
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
 
                   // Emoji
                   AnimatedSwitcher(
@@ -209,11 +216,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     child: Text(
                       page.emoji,
                       key: ValueKey('emoji_$_currentPage'),
-                      style: const TextStyle(fontSize: 48),
+                      style: const TextStyle(fontSize: 44),
                     ),
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
 
                   // Title
                   AnimatedSwitcher(
@@ -226,7 +233,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         style: AppTypography.kidsDisplayLg.copyWith(
                           color: Colors.black87,
                           fontWeight: FontWeight.w800,
-                          fontSize: 26,
+                          fontSize: 24,
                           height: 1.2,
                         ),
                         textAlign: TextAlign.center,
@@ -234,7 +241,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
 
                   // Body
                   AnimatedSwitcher(
@@ -247,14 +254,14 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         style: AppTypography.kidsBodyMd.copyWith(
                           color: Colors.black54,
                           height: 1.5,
-                          fontSize: 15,
+                          fontSize: 14,
                         ),
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
 
                   // Page dots
                   OnboardingPageIndicator(
@@ -266,37 +273,35 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
                   // Next / Get Started button
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
                     child: ScaleTransition(
                       scale: _bounceAnimation,
                       child: GestureDetector(
                         onTap: _next,
                         child: Container(
                           width: double.infinity,
-                          height: 60,
+                          height: 58,
                           decoration: BoxDecoration(
                             color: AppColors.orange500,
                             borderRadius: BorderRadius.circular(32),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.orange500.withValues(alpha: 0.4),
+                                color: AppColors.orange500
+                                    .withValues(alpha: 0.45),
                                 blurRadius: 16,
                                 offset: const Offset(0, 6),
                               ),
                             ],
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                _isLastPage ? "Let's Go! 🚀" : 'Next  →',
-                                style: AppTypography.kidsHeadlineLg.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 18,
-                                ),
+                          child: Center(
+                            child: Text(
+                              _isLastPage ? "Let's Go! 🚀" : 'Next  →',
+                              style: AppTypography.kidsHeadlineLg.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 18,
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
