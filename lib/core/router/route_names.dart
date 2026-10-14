@@ -11,7 +11,6 @@ class RouteNames {
   static const String onboarding = '/onboarding';
 
   // ── Parent PIN Gate ────────────────────────────
-  /// Pass [parentPinPurpose] as extra to indicate why the PIN is needed.
   static const String parentPin = '/parent-pin';
 
   // ── Child Profile ──────────────────────────────
@@ -21,7 +20,7 @@ class RouteNames {
   // ── Level Selection ────────────────────────────
   static const String levelSelection = '/level-selection';
 
-  // ── Kids Home Shell ────────────────────────────
+  // ── Kids Home ──────────────────────────────────
   static const String kidsHome = '/kids';
   static const String kidsDashboard = '/kids/home';
 
@@ -46,4 +45,11 @@ class RouteNames {
   static const String parentDashboard = '/parent/dashboard';
   static const String parentSettings = '/parent/settings';
   static const String notifications = '/parent/notifications';
+
+  // ── Legacy stubs (kept for router compatibility) ─
+  static const String kgHome = '/kg-home';
+  static const String gradeDashboard = '/grade-dashboard';
+  static const String subjectDetail = '/subject-detail';
+  static const String quiz = '/quiz';
+  static const String profile = '/profile';
 }
