@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../features/authentication/screens/login_screen.dart';
 import '../../features/common/screens/splash_screen.dart';
+import '../../features/onboarding/screens/onboarding_screen.dart';
 import 'route_names.dart';
 
 /// Top-level application router configuration using GoRouter.
-/// Directs users across splash, authentication, KG, and Grade modules.
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: RouteNames.splash,
@@ -14,6 +15,11 @@ class AppRouter {
         path: RouteNames.splash,
         name: 'splash',
         builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.onboarding,
+        name: 'onboarding',
+        builder: (context, state) => const OnboardingScreen(),
       ),
       GoRoute(
         path: RouteNames.login,
