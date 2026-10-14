@@ -13,7 +13,11 @@ import '../widgets/onboarding_page_indicator.dart';
 class _OnboardingPage {
   final String title;
   final String body;
-  final String illustrationAsset; // image asset path
+
+  /// Local asset path — place your Figma-exported PNG here.
+  /// Falls back to [placeholderColor] if the asset is missing.
+  final String illustrationAsset;
+  final Color placeholderColor;
   final IconData topBadgeIcon;
   final IconData bottomBadgeIcon;
 
@@ -21,12 +25,14 @@ class _OnboardingPage {
     required this.title,
     required this.body,
     required this.illustrationAsset,
+    required this.placeholderColor,
     required this.topBadgeIcon,
     required this.bottomBadgeIcon,
   });
 }
 
 /// Onboarding screen with 3 swipeable pages, page indicator, and Get Started button.
+/// Navigation flow: Splash → Onboarding → Login
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -38,12 +44,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  static const List<_OnboardingPage> _pages = [
+  static final List<_OnboardingPage> _pages = [
     _OnboardingPage(
       title: 'Learn & Play',
       body:
           'Fun lessons designed for Nursery, Lower KG, and Upper KG children with pictures, sounds, and games.',
       illustrationAsset: 'assets/images/onboarding_1.png',
+      placeholderColor: const Color(0xFFDDE8F8),
       topBadgeIcon: Icons.star_rounded,
       bottomBadgeIcon: Icons.music_note_rounded,
     ),
@@ -52,14 +59,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body:
           'Watch your child grow with daily goals, streaks, and achievements they will love to collect.',
       illustrationAsset: 'assets/images/onboarding_2.png',
+      placeholderColor: const Color(0xFFE8F5E9),
       topBadgeIcon: Icons.emoji_events_rounded,
       bottomBadgeIcon: Icons.bar_chart_rounded,
     ),
     _OnboardingPage(
       title: 'Excel in Your Exams',
       body:
-          'Personalized learning paths for Grade 6 to 8. Master complex topics with interactive practice and expert guidance.',
+          'Personalized learning paths for Nursery, Lower KG, and Upper KG. Master topics with interactive practice and expert guidance.',
       illustrationAsset: 'assets/images/onboarding_3.png',
+      placeholderColor: const Color(0xFFFFF3E0),
       topBadgeIcon: Icons.calculate_rounded,
       bottomBadgeIcon: Icons.menu_book_rounded,
     ),
@@ -90,7 +99,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // ── Background ambient glows ──────────────────────
+          // ── Background ambient glows (same as splash) ────
           Positioned(
             top: glowOffset,
             right: glowOffset,
@@ -126,11 +135,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
 
-          // ── Main content ──────────────────────────────────
+          // ── Main content ─────────────────────────────────
           SafeArea(
             child: Column(
               children: [
-                // Page view — illustration cards
+                // Illustration page view
                 Expanded(
                   flex: 5,
                   child: PageView.builder(
@@ -147,6 +156,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                         child: OnboardingIllustrationCard(
                           illustrationAsset: page.illustrationAsset,
+                          placeholderColor: page.placeholderColor,
                           topBadgeIcon: page.topBadgeIcon,
                           bottomBadgeIcon: page.bottomBadgeIcon,
                         ),
@@ -155,7 +165,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
 
-                // Text area
+                // Title + body text
                 Expanded(
                   flex: 3,
                   child: Padding(
@@ -178,12 +188,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   currentIndex: _currentPage,
                 ),
 
-                const SizedBox(height: AppSpacing.space8),
+                // Space before button
+                const SizedBox(height: 80),
               ],
             ),
           ),
 
-          // ── Get Started button (bottom) ───────────────────
+          // ── Get Started button pinned to bottom ──────────
           Positioned(
             left: AppSpacing.space6,
             right: AppSpacing.space6,
@@ -231,7 +242,7 @@ class _PageText extends StatelessWidget {
   }
 }
 
-/// Orange pill Get Started button.
+/// Orange pill "Get Started →" button.
 class _GetStartedButton extends StatelessWidget {
   final VoidCallback onPressed;
 

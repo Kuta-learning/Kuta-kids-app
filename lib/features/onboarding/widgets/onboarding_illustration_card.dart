@@ -6,14 +6,19 @@ import '../../../core/constants/app_spacing.dart'; // AppSpacing, AppRadius, App
 /// The large rounded illustration card shown on each onboarding page.
 /// Features a top-right icon badge and a bottom-left icon badge, exactly
 /// as shown in the Figma design.
+///
+/// Replace [illustrationAsset] with your Figma-exported PNG.
+/// Until the asset is added, a styled color placeholder is shown.
 class OnboardingIllustrationCard extends StatelessWidget {
   final String illustrationAsset;
+  final Color placeholderColor;
   final IconData topBadgeIcon;
   final IconData bottomBadgeIcon;
 
   const OnboardingIllustrationCard({
     super.key,
     required this.illustrationAsset,
+    required this.placeholderColor,
     required this.topBadgeIcon,
     required this.bottomBadgeIcon,
   });
@@ -27,7 +32,7 @@ class OnboardingIllustrationCard extends StatelessWidget {
         Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: const Color(0xFFDDE8F8), // light blue-lavender as in Figma
+            color: placeholderColor,
             borderRadius: BorderRadius.circular(AppRadius.xl2),
             boxShadow: AppElevation.elevation2,
           ),
@@ -38,14 +43,17 @@ class OnboardingIllustrationCard extends StatelessWidget {
           ),
         ),
 
-        // Top-right icon badge
+        // Top-right floating icon badge
         Positioned(
           top: -(AppSpacing.space2),
           right: -(AppSpacing.space2),
-          child: _IconBadge(icon: topBadgeIcon),
+          child: _IconBadge(
+            icon: topBadgeIcon,
+            iconColor: AppColors.secondAccent,
+          ),
         ),
 
-        // Bottom-left icon badge
+        // Bottom-left floating icon badge
         Positioned(
           bottom: AppSpacing.space4,
           left: -(AppSpacing.space2),
@@ -59,26 +67,26 @@ class OnboardingIllustrationCard extends StatelessWidget {
   }
 
   Widget _illustrationWidget() {
-    // Try to load the asset; fall back to a placeholder if not found.
     return Image.asset(
       illustrationAsset,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
-        return const _IllustrationPlaceholder();
+        // Styled placeholder shown until real Figma illustrations are added
+        return _IllustrationPlaceholder(
+          color: placeholderColor,
+          icon: topBadgeIcon,
+        );
       },
     );
   }
 }
 
-/// Small white rounded square icon badge used as floating decorators on the card.
+/// Small white rounded square icon badge — floating decorator on the card.
 class _IconBadge extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
 
-  const _IconBadge({
-    required this.icon,
-    this.iconColor = AppColors.secondAccent,
-  });
+  const _IconBadge({required this.icon, required this.iconColor});
 
   @override
   Widget build(BuildContext context) {
@@ -95,19 +103,36 @@ class _IconBadge extends StatelessWidget {
   }
 }
 
-/// Fallback placeholder shown when illustration asset is missing.
+/// Placeholder shown when illustration PNG asset is not yet added.
+/// Displays a large centered icon on the page's background color.
 class _IllustrationPlaceholder extends StatelessWidget {
-  const _IllustrationPlaceholder();
+  final Color color;
+  final IconData icon;
+
+  const _IllustrationPlaceholder({
+    required this.color,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFDDE8F8),
-      child: const Center(
-        child: Icon(
-          Icons.image_outlined,
-          size: 64,
-          color: Color(0xFF94A3B8),
+      color: color,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 80, color: AppColors.textSecondary.withValues(alpha: 0.4)),
+            const SizedBox(height: 12),
+            Text(
+              'Add illustration to\nassets/images/',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColors.textSecondary.withValues(alpha: 0.5),
+              ),
+            ),
+          ],
         ),
       ),
     );
