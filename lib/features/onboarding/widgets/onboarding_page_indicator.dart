@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 
-/// Row of page indicator dots.
-/// The active dot is an elongated pill; inactive dots are small circles.
-/// Matches the Figma design exactly.
+/// Playful page indicator dots for the onboarding screen.
+/// Active dot = wide orange pill. Inactive = small white circle with border.
 class OnboardingPageIndicator extends StatelessWidget {
   final int count;
   final int currentIndex;
@@ -22,16 +21,26 @@ class OnboardingPageIndicator extends StatelessWidget {
       children: List.generate(count, (index) {
         final bool isActive = index == currentIndex;
         return AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 350),
           curve: Curves.easeInOut,
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          width: isActive ? 28 : 8,
-          height: 8,
+          margin: const EdgeInsets.symmetric(horizontal: 5),
+          width: isActive ? 32 : 10,
+          height: 10,
           decoration: BoxDecoration(
-            color: isActive
-                ? AppColors.orange500
-                : AppColors.borderVariant,
+            color: isActive ? AppColors.orange500 : Colors.white,
             borderRadius: BorderRadius.circular(100),
+            border: isActive
+                ? null
+                : Border.all(color: Colors.black26, width: 1.5),
+            boxShadow: isActive
+                ? [
+                    BoxShadow(
+                      color: AppColors.orange500.withValues(alpha: 0.4),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    )
+                  ]
+                : null,
           ),
         );
       }),

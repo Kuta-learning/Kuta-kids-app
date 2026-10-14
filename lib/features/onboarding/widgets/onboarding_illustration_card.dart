@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_spacing.dart';
 
 /// Rounded illustration card with a floating icon badge (top-right).
-/// When the image asset is not yet available, shows a bright kid-friendly
-/// placeholder with a large learning icon.
 class OnboardingIllustrationCard extends StatelessWidget {
   final String illustrationAsset;
   final Color cardColor;
@@ -30,8 +27,14 @@ class OnboardingIllustrationCard extends StatelessWidget {
           width: double.infinity,
           decoration: BoxDecoration(
             color: cardColor,
-            borderRadius: BorderRadius.circular(AppRadius.xl2),
-            boxShadow: AppElevation.elevation2,
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.10),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
           clipBehavior: Clip.antiAlias,
           child: AspectRatio(
@@ -50,17 +53,23 @@ class OnboardingIllustrationCard extends StatelessWidget {
 
         // Top-right floating badge
         Positioned(
-          top: 12,
-          right: -8,
+          top: 10,
+          right: -10,
           child: Container(
-            width: 48,
-            height: 48,
+            width: 52,
+            height: 52,
             decoration: BoxDecoration(
-              color: AppColors.surfaceWhite,
-              borderRadius: AppRadius.roundedXl,
-              boxShadow: AppElevation.elevation2,
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.12),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            child: Icon(badgeIcon, color: badgeIconColor, size: 24),
+            child: Icon(badgeIcon, color: badgeIconColor, size: 26),
           ),
         ),
       ],
@@ -68,7 +77,7 @@ class OnboardingIllustrationCard extends StatelessWidget {
   }
 }
 
-/// Kid-friendly placeholder: bright background + large learning icon + label.
+/// Bright, colorful kids placeholder shown until real illustrations are added.
 class _KidsPlaceholder extends StatelessWidget {
   final Color color;
   final IconData icon;
@@ -88,36 +97,40 @@ class _KidsPlaceholder extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Decorative circles
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _dot(const Color(0xFFFF6B6B), 14),
                 const SizedBox(width: 8),
-                _dot(const Color(0xFFFFD166), 18),
+                _dot(const Color(0xFFFFD166), 20),
                 const SizedBox(width: 8),
                 _dot(const Color(0xFF06D6A0), 12),
               ],
             ),
-            const SizedBox(height: 16),
-            // Main icon
+            const SizedBox(height: 14),
             Container(
-              width: 80,
-              height: 80,
+              width: 90,
+              height: 90,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.7),
+                color: Colors.white.withValues(alpha: 0.75),
                 shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: iconColor.withValues(alpha: 0.2),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              child: Icon(icon, size: 44, color: iconColor),
+              child: Icon(icon, size: 48, color: iconColor),
             ),
-            const SizedBox(height: 16),
-            // Decorative dots (bottom)
+            const SizedBox(height: 14),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _dot(const Color(0xFF06D6A0), 10),
                 const SizedBox(width: 8),
-                _dot(const Color(0xFF2563EB), 14),
+                _dot(AppColors.navy700, 14),
                 const SizedBox(width: 8),
                 _dot(const Color(0xFFFFD166), 10),
               ],

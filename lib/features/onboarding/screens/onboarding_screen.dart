@@ -3,32 +3,35 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/router/route_names.dart';
 import '../widgets/onboarding_illustration_card.dart';
 import '../widgets/onboarding_page_indicator.dart';
 
 class _OnboardingPage {
+  final String emoji;
   final String title;
   final String body;
-  final String illustrationAsset; // Replace with Figma export
+  final String illustrationAsset;
   final Color cardColor;
+  final Color bgTop;
+  final Color bgBottom;
   final IconData badgeIcon;
   final Color badgeIconColor;
 
   const _OnboardingPage({
+    required this.emoji,
     required this.title,
     required this.body,
     required this.illustrationAsset,
     required this.cardColor,
+    required this.bgTop,
+    required this.bgBottom,
     required this.badgeIcon,
     required this.badgeIconColor,
   });
 }
 
-/// 3-page onboarding. Children tap Next / Get Started to advance —
-/// they can also swipe. Designed to be bright, friendly, and inviting.
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -36,38 +39,70 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends State<OnboardingScreen>
+    with SingleTickerProviderStateMixin {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  late AnimationController _bounceController;
+  late Animation<double> _bounceAnimation;
 
   static const List<_OnboardingPage> _pages = [
     _OnboardingPage(
-      title: 'Learn with Fun! 🎨',
-      body: 'Colorful lessons made just for you — letters, numbers, shapes, animals, and so much more!',
+      emoji: '🎨',
+      title: 'Learn with Fun!',
+      body: 'Letters, numbers, colors and shapes — made just for little learners like you!',
       illustrationAsset: 'assets/images/onboarding_1.png',
-      cardColor: Color(0xFFDDE8F8), // light blue
+      cardColor: Color(0xFFDDE8F8),
+      bgTop: Color(0xFFFFE0B2),
+      bgBottom: Color(0xFFBBDEFB),
       badgeIcon: Icons.abc_rounded,
-      badgeIconColor: Color(0xFF2563EB),
+      badgeIconColor: Color(0xFF1565C0),
     ),
     _OnboardingPage(
-      title: 'Play & Discover! 🌟',
-      body: 'Fun games and activities that make learning feel like playtime every single day.',
+      emoji: '🧩',
+      title: 'Play & Discover!',
+      body: 'Games, puzzles and activities that make every lesson feel like playtime!',
       illustrationAsset: 'assets/images/onboarding_2.png',
-      cardColor: Color(0xFFFFF0D6), // warm yellow
+      cardColor: Color(0xFFFFF9C4),
+      bgTop: Color(0xFFF8BBD0),
+      bgBottom: Color(0xFFC8E6C9),
       badgeIcon: Icons.extension_rounded,
-      badgeIconColor: Color(0xFFF59E0B),
+      badgeIconColor: Color(0xFFF57F17),
     ),
     _OnboardingPage(
-      title: 'Grow Every Day! 🚀',
-      body: 'Earn stars, badges, and rewards as you learn. Your parents can see how amazing you are!',
+      emoji: '🏆',
+      title: 'Earn Stars!',
+      body: 'Complete lessons, collect badges and show your parents how brilliant you are!',
       illustrationAsset: 'assets/images/onboarding_3.png',
-      cardColor: Color(0xFFDCF5EB), // soft green
+      cardColor: Color(0xFFDCEDC8),
+      bgTop: Color(0xFFE1BEE7),
+      bgBottom: Color(0xFFB2EBF2),
       badgeIcon: Icons.emoji_events_rounded,
-      badgeIconColor: Color(0xFF06D6A0),
+      badgeIconColor: Color(0xFF2E7D32),
     ),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _bounceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _bounceAnimation = Tween<double>(begin: 1.0, end: 1.08).animate(
+      CurvedAnimation(parent: _bounceController, curve: Curves.elasticOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _bounceController.dispose();
+    super.dispose();
+  }
+
   void _next() {
+    _bounceController.forward(from: 0);
     if (_currentPage < _pages.length - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 400),
@@ -85,248 +120,213 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool get _isLastPage => _currentPage == _pages.length - 1;
 
   @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
-    final double glowSize = size.width * 0.9;
-    const double glowOffset = -80.0;
+    final page = _pages[_currentPage];
 
     return Scaffold(
-      backgroundColor: AppColors.surfaceApp,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // ── Ambient background glows ────────────────────
-          Positioned(
-            top: glowOffset,
-            right: glowOffset,
-            child: IgnorePointer(
-              child: ImageFiltered(
-                imageFilter: ImageFilter.blur(sigmaX: 32, sigmaY: 32),
-                child: Container(
-                  width: glowSize,
-                  height: glowSize,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.orange500.withValues(alpha: 0.1),
-                  ),
-                ),
-              ),
-            ),
+      body: AnimatedContainer(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [page.bgTop, page.bgBottom],
           ),
-          Positioned(
-            bottom: glowOffset,
-            left: glowOffset,
-            child: IgnorePointer(
-              child: ImageFiltered(
-                imageFilter: ImageFilter.blur(sigmaX: 32, sigmaY: 32),
-                child: Container(
-                  width: glowSize,
-                  height: glowSize,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.navy700.withValues(alpha: 0.08),
-                  ),
-                ),
+        ),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              // ── Decorative blurred circles ────────────
+              Positioned(
+                top: -40,
+                right: -40,
+                child: _BlurCircle(color: page.bgTop, size: 200),
               ),
-            ),
-          ),
+              Positioned(
+                bottom: 80,
+                left: -60,
+                child: _BlurCircle(color: page.bgBottom, size: 240),
+              ),
 
-          // ── Main content ────────────────────────────────
-          SafeArea(
-            child: Column(
-              children: [
-                // Skip button (top-right)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      right: AppSpacing.space4,
-                      top: AppSpacing.space2,
-                    ),
-                    child: _isLastPage
-                        ? const SizedBox(height: 40)
-                        : TextButton(
-                            onPressed: _skip,
-                            child: Text(
-                              'Skip',
-                              style: AppTypography.bodyMdMedium.copyWith(
-                                color: AppColors.textSecondary,
+              Column(
+                children: [
+                  // Skip
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 20, top: 8),
+                      child: _isLastPage
+                          ? const SizedBox(height: 36)
+                          : GestureDetector(
+                              onTap: _skip,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.6),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  'Skip',
+                                  style: AppTypography.bodyMdMedium.copyWith(
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                    ),
                   ),
-                ),
 
-                // Illustration cards (swipeable)
-                Expanded(
-                  flex: 4,
-                  child: PageView.builder(
-                    controller: _pageController,
-                    onPageChanged: _onPageChanged,
-                    itemCount: _pages.length,
-                    itemBuilder: (context, index) {
-                      final page = _pages[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.space6,
-                        ),
-                        child: OnboardingIllustrationCard(
-                          illustrationAsset: page.illustrationAsset,
-                          cardColor: page.cardColor,
-                          badgeIcon: page.badgeIcon,
-                          badgeIconColor: page.badgeIconColor,
-                        ),
-                      );
-                    },
+                  const SizedBox(height: 8),
+
+                  // Illustration card
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: PageView.builder(
+                      controller: _pageController,
+                      onPageChanged: _onPageChanged,
+                      itemCount: _pages.length,
+                      physics: const BouncingScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final p = _pages[index];
+                        return OnboardingIllustrationCard(
+                          illustrationAsset: p.illustrationAsset,
+                          cardColor: p.cardColor,
+                          badgeIcon: p.badgeIcon,
+                          badgeIconColor: p.badgeIconColor,
+                        );
+                      },
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: AppSpacing.space4),
+                  const SizedBox(height: 24),
 
-                // Title + body — animates between pages
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.space6),
-                  child: AnimatedSwitcher(
+                  // Emoji
+                  AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
-                    transitionBuilder: (child, animation) => FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(
-                        position: Tween<Offset>(
-                          begin: const Offset(0, 0.1),
-                          end: Offset.zero,
-                        ).animate(animation),
-                        child: child,
+                    child: Text(
+                      page.emoji,
+                      key: ValueKey('emoji_$_currentPage'),
+                      style: const TextStyle(fontSize: 48),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Title
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 28),
+                      child: Text(
+                        page.title,
+                        key: ValueKey('title_$_currentPage'),
+                        style: AppTypography.kidsDisplayLg.copyWith(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 26,
+                          height: 1.2,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                    child: _PageText(
-                      key: ValueKey(_currentPage),
-                      title: _pages[_currentPage].title,
-                      body: _pages[_currentPage].body,
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // Body
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: Text(
+                        page.body,
+                        key: ValueKey('body_$_currentPage'),
+                        style: AppTypography.kidsBodyMd.copyWith(
+                          color: Colors.black54,
+                          height: 1.5,
+                          fontSize: 15,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
-                ),
 
-                const SizedBox(height: AppSpacing.space4),
+                  const SizedBox(height: 20),
 
-                // Page indicator dots
-                OnboardingPageIndicator(
-                  count: _pages.length,
-                  currentIndex: _currentPage,
-                ),
+                  // Page dots
+                  OnboardingPageIndicator(
+                    count: _pages.length,
+                    currentIndex: _currentPage,
+                  ),
 
-                // Space before button
-                const SizedBox(height: 72),
-              ],
-            ),
-          ),
+                  const Spacer(),
 
-          // ── Next / Get Started button ────────────────────
-          Positioned(
-            left: AppSpacing.space6,
-            right: AppSpacing.space6,
-            bottom: AppSpacing.space6,
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child: _isLastPage
-                  ? _BigButton(
-                      key: const ValueKey('start'),
-                      label: 'Get Started',
-                      icon: Icons.arrow_forward_rounded,
-                      onPressed: _next,
-                    )
-                  : _BigButton(
-                      key: const ValueKey('next'),
-                      label: 'Next',
-                      icon: Icons.arrow_forward_rounded,
-                      onPressed: _next,
+                  // Next / Get Started button
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
+                    child: ScaleTransition(
+                      scale: _bounceAnimation,
+                      child: GestureDetector(
+                        onTap: _next,
+                        child: Container(
+                          width: double.infinity,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            color: AppColors.orange500,
+                            borderRadius: BorderRadius.circular(32),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.orange500.withValues(alpha: 0.4),
+                                blurRadius: 16,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                _isLastPage ? "Let's Go! 🚀" : 'Next  →',
+                                style: AppTypography.kidsHeadlineLg.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class _PageText extends StatelessWidget {
-  final String title;
-  final String body;
-  const _PageText({super.key, required this.title, required this.body});
+class _BlurCircle extends StatelessWidget {
+  final Color color;
+  final double size;
+  const _BlurCircle({required this.color, required this.size});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          title,
-          style: AppTypography.headlineLg.copyWith(
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
-            height: 1.2,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: AppSpacing.space2),
-        Text(
-          body,
-          style: AppTypography.bodyMd.copyWith(
-            color: AppColors.textSecondary,
-            height: 1.5,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
-}
-
-/// Large orange pill button — used for both Next and Get Started.
-class _BigButton extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  const _BigButton({
-    super.key,
-    required this.label,
-    required this.icon,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.orange500,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: const StadiumBorder(),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              label,
-              style: AppTypography.titleMd.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(width: AppSpacing.space2),
-            Icon(icon, size: 20),
-          ],
+    return ImageFiltered(
+      imageFilter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color.withValues(alpha: 0.5),
         ),
       ),
     );
