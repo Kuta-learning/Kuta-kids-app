@@ -1,11 +1,10 @@
 import 'kids_level.dart';
 
-/// Represents a child's profile stored locally and/or on the backend.
 class ChildProfile {
   final String id;
   final String name;
   final KidsLevel level;
-  final String avatarId; // references an asset avatar image key
+  final String avatarId;
   final int? ageYears;
   final DateTime createdAt;
 
@@ -56,10 +55,7 @@ class ChildProfile {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ChildProfile &&
-          runtimeType == other.runtimeType &&
-          id == other.id;
+      other is ChildProfile && other.id == id;
 
   @override
   int get hashCode => id.hashCode;

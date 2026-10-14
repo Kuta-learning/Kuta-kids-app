@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 
-/// Rounded illustration card with a floating icon badge (top-right).
 class OnboardingIllustrationCard extends StatelessWidget {
-  final String illustrationAsset;
+  final String asset;
   final Color cardColor;
   final IconData badgeIcon;
   final Color badgeIconColor;
 
   const OnboardingIllustrationCard({
     super.key,
-    required this.illustrationAsset,
+    required this.asset,
     required this.cardColor,
     required this.badgeIcon,
     required this.badgeIconColor,
@@ -22,7 +21,6 @@ class OnboardingIllustrationCard extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // Main card
         Container(
           width: double.infinity,
           decoration: BoxDecoration(
@@ -40,9 +38,9 @@ class OnboardingIllustrationCard extends StatelessWidget {
           child: AspectRatio(
             aspectRatio: 4 / 3,
             child: Image.asset(
-              illustrationAsset,
+              asset,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => _KidsPlaceholder(
+              errorBuilder: (_, __, ___) => _Placeholder(
                 color: cardColor,
                 icon: badgeIcon,
                 iconColor: badgeIconColor,
@@ -50,8 +48,6 @@ class OnboardingIllustrationCard extends StatelessWidget {
             ),
           ),
         ),
-
-        // Top-right floating badge
         Positioned(
           top: 10,
           right: -10,
@@ -77,13 +73,12 @@ class OnboardingIllustrationCard extends StatelessWidget {
   }
 }
 
-/// Bright, colorful kids placeholder shown until real illustrations are added.
-class _KidsPlaceholder extends StatelessWidget {
+class _Placeholder extends StatelessWidget {
   final Color color;
   final IconData icon;
   final Color iconColor;
 
-  const _KidsPlaceholder({
+  const _Placeholder({
     required this.color,
     required this.icon,
     required this.iconColor,
@@ -114,13 +109,6 @@ class _KidsPlaceholder extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.75),
                 shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: iconColor.withValues(alpha: 0.2),
-                    blurRadius: 16,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
               ),
               child: Icon(icon, size: 48, color: iconColor),
             ),
