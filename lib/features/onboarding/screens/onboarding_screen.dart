@@ -165,7 +165,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                 // Illustration cards (swipeable)
                 Expanded(
-                  flex: 5,
+                  flex: 4,
                   child: PageView.builder(
                     controller: _pageController,
                     onPageChanged: _onPageChanged,
@@ -187,7 +187,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
 
-                const SizedBox(height: AppSpacing.space6),
+                const SizedBox(height: AppSpacing.space4),
 
                 // Title + body — animates between pages
                 Padding(
@@ -213,7 +213,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
 
-                const SizedBox(height: AppSpacing.space6),
+                const SizedBox(height: AppSpacing.space4),
 
                 // Page indicator dots
                 OnboardingPageIndicator(
@@ -222,7 +222,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
 
                 // Space before button
-                const SizedBox(height: 80),
+                const SizedBox(height: 72),
               ],
             ),
           ),
@@ -267,19 +267,19 @@ class _PageText extends StatelessWidget {
       children: [
         Text(
           title,
-          style: AppTypography.displayLg.copyWith(
+          style: AppTypography.headlineLg.copyWith(
             fontWeight: FontWeight.w800,
             color: AppColors.textPrimary,
             height: 1.2,
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: AppSpacing.space4),
+        const SizedBox(height: AppSpacing.space2),
         Text(
           body,
-          style: AppTypography.bodyLg.copyWith(
+          style: AppTypography.bodyMd.copyWith(
             color: AppColors.textSecondary,
-            height: 1.6,
+            height: 1.5,
           ),
           textAlign: TextAlign.center,
         ),
