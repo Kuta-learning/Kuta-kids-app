@@ -47,8 +47,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed && mounted) {
-        // Navigate to registration screen until onboarding screen is made
-        context.go(RouteNames.register);
+        context.go(RouteNames.onboarding);
       }
     });
   }
@@ -202,7 +201,7 @@ class _SplashScreenState extends State<SplashScreen>
                   AppSpacing.vGap2, // 8px margin
                   // Brand Subtitle / Tagline
                   Text(
-                    'Empowering Next-Gen Learning',
+                    AppConstants.appTagline,
                     style: AppTypography.bodyLg.copyWith(
                       color: AppColors.textSecondary,
                       letterSpacing: 0.4,
