@@ -36,42 +36,40 @@ class AppRouter {
         path: RouteNames.kgHome,
         name: 'kgHome',
         builder: (context, state) => const Scaffold(
-          body: Center(child: Text('KG Home Screen')),
+          body: Center(child: Text('KG Home')),
         ),
       ),
       GoRoute(
         path: RouteNames.gradeDashboard,
         name: 'gradeDashboard',
         builder: (context, state) => const Scaffold(
-          body: Center(child: Text('Grade Dashboard Screen')),
+          body: Center(child: Text('Grade Dashboard')),
         ),
       ),
       GoRoute(
         path: RouteNames.subjectDetail,
         name: 'subjectDetail',
         builder: (context, state) => const Scaffold(
-          body: Center(child: Text('Subject Detail Screen')),
+          body: Center(child: Text('Subject Detail')),
         ),
       ),
       GoRoute(
         path: RouteNames.quiz,
         name: 'quiz',
         builder: (context, state) => const Scaffold(
-          body: Center(child: Text('Quiz Screen')),
+          body: Center(child: Text('Quiz')),
         ),
       ),
       GoRoute(
         path: RouteNames.profile,
         name: 'profile',
         builder: (context, state) => const Scaffold(
-          body: Center(child: Text('Profile Screen')),
+          body: Center(child: Text('Profile')),
         ),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Text('No route defined for ${state.uri}'),
-      ),
+      body: Center(child: Text('No route defined for ${state.uri}')),
     ),
   );
 
