@@ -7,6 +7,7 @@ import '../../features/common/screens/splash_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 import 'route_names.dart';
 
+/// Top-level application router configuration using GoRouter.
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: RouteNames.splash,
