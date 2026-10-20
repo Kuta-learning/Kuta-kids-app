@@ -1,58 +1,62 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/constants/grade_level.dart';
+
 import '../models/register_request.dart';
-import '../models/user_model.dart';
 import '../services/auth_service.dart';
+import 'auth_event.dart';
+import 'auth_state.dart';
 
-part 'auth_event.dart';
-part 'auth_state.dart';
-
-/// Manages the full authentication lifecycle:
-/// session restoration on startup, registration, login, and logout.
-///
-/// Inject via [BlocProvider] at or above any route that needs auth context.
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final AuthService _authService;
+  final AuthService _service;
 
-  AuthBloc(this._authService) : super(const AuthInitial()) {
-    on<AuthCheckRequested>(_onAuthCheckRequested);
-    on<RegisterRequested>(_onRegisterRequested);
-    on<LoginRequested>(_onLoginRequested);
-    on<LogoutRequested>(_onLogoutRequested);
+  AuthBloc(this._service) : super(const AuthInitial()) {
+    on<AuthCheckRequested>(_onCheckRequested);
+    on<AuthLoginRequested>(_onLoginRequested);
+    on<AuthRegisterRequested>(_onRegisterRequested);
+    on<AuthLogoutRequested>(_onLogoutRequested);
   }
 
-  // ── Session Check ──────────────────────────────────────────────────────
-  Future<void> _onAuthCheckRequested(
+  Future<void> _onCheckRequested(
     AuthCheckRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(const AuthLoading());
-    try {
-      final user = await _authService.getCurrentUser();
-      if (user != null) {
-        emit(AuthAuthenticated(user));
-      } else {
-        emit(const AuthUnauthenticated());
-      }
-    } catch (_) {
+    final user = await _service.getCurrentUser();
+    if (user != null) {
+      emit(AuthAuthenticated(user));
+    } else {
       emit(const AuthUnauthenticated());
     }
   }
 
-  // ── Register ───────────────────────────────────────────────────────────
-  Future<void> _onRegisterRequested(
-    RegisterRequested event,
+  Future<void> _onLoginRequested(
+    AuthLoginRequested event,
     Emitter<AuthState> emit,
   ) async {
     emit(const AuthLoading());
     try {
-      final request = RegisterRequest(
+      final user = await _service.login(
+        email: event.email,
+        password: event.password,
+      );
+      emit(AuthAuthenticated(user));
+    } on AuthException catch (e) {
+      emit(AuthFailure(e.message));
+    } catch (_) {
+      emit(const AuthFailure('Something went wrong. Please try again.'));
+    }
+  }
+
+  Future<void> _onRegisterRequested(
+    AuthRegisterRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    try {
+      final user = await _service.register(RegisterRequest(
         name: event.name,
         email: event.email,
         password: event.password,
         gradeLevel: event.gradeLevel,
-      );
-      final user = await _authService.register(request);
+      ));
       emit(AuthAuthenticated(user));
     } on AuthException catch (e) {
       emit(AuthFailure(e.message));
@@ -61,31 +65,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  // ── Login ──────────────────────────────────────────────────────────────
-  Future<void> _onLoginRequested(
-    LoginRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(const AuthLoading());
-    try {
-      final user = await _authService.login(
-        email: event.email,
-        password: event.password,
-      );
-      emit(AuthAuthenticated(user));
-    } on AuthException catch (e) {
-      emit(AuthFailure(e.message));
-    } catch (_) {
-      emit(const AuthFailure('Something went wrong. Please try again.'));
-    }
-  }
-
-  // ── Logout ─────────────────────────────────────────────────────────────
   Future<void> _onLogoutRequested(
-    LogoutRequested event,
+    AuthLogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
-    await _authService.logout();
+    await _service.logout();
     emit(const AuthUnauthenticated());
   }
 }

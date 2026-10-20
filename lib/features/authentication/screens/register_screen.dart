@@ -1,10 +1,15 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
+import '../../../core/constants/grade_level.dart';
 import '../../../core/router/route_names.dart';
+import '../bloc/auth_bloc.dart';
+import '../bloc/auth_event.dart';
+import '../bloc/auth_state.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -21,7 +26,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String? _selectedLevel;
   bool _passwordVisible = false;
-  bool _isLoading = false;
+
+  static const _levelMap = {
+    'Nursery': GradeLevel.kg,
+    'Lower KG': GradeLevel.kg,
+    'Upper KG': GradeLevel.kg,
+  };
 
   static const _levels = ['Nursery', 'Lower KG', 'Upper KG'];
 
@@ -35,14 +45,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _onSignUp() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _isLoading = true);
-    // TODO: connect to AuthBloc
-    await Future.delayed(const Duration(seconds: 2));
-    if (mounted) setState(() => _isLoading = false);
+    context.read<AuthBloc>().add(AuthRegisterRequested(
+          name: _nameController.text.trim(),
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          gradeLevel: _levelMap[_selectedLevel!]!,
+        ));
   }
 
   @override
   Widget build(BuildContext context) {
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthAuthenticated) {
+          context.go(RouteNames.kidsDashboard);
+        } else if (state is AuthFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: const Color(0xFFEF4444),
+            ),
+          );
+        }
+      },
+      child: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          final isLoading = state is AuthLoading;
+          return _buildScaffold(context, isLoading);
+        },
+      ),
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context, bool isLoading) {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -189,13 +224,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                               const SizedBox(height: 24),
                               GestureDetector(
-                                onTap: _isLoading ? null : _onSignUp,
+                                onTap: isLoading ? null : _onSignUp,
                                 child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 200),
                                   width: double.infinity,
                                   height: 56,
                                   decoration: BoxDecoration(
-                                    color: _isLoading
+                                    color: isLoading
                                         ? AppColors.orange500.withValues(alpha: 0.7)
                                         : AppColors.orange500,
                                     borderRadius: BorderRadius.circular(28),
@@ -208,7 +243,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     ],
                                   ),
                                   child: Center(
-                                    child: _isLoading
+                                    child: isLoading
                                         ? const SizedBox(
                                             width: 24,
                                             height: 24,
