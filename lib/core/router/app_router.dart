@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/authentication/screens/login_screen.dart';
 import '../../features/authentication/screens/register_screen.dart';
 import '../../features/common/screens/splash_screen.dart';
+import '../../features/kids_home/screens/kids_home_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 import 'route_names.dart';
 
@@ -31,6 +32,11 @@ class AppRouter {
         path: RouteNames.register,
         name: 'register',
         builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.kidsDashboard,
+        name: 'kidsDashboard',
+        builder: (context, state) => const KidsHomeScreen(),
       ),
       GoRoute(
         path: RouteNames.kgHome,

@@ -64,7 +64,6 @@ class MockAuthService implements AuthService {
       name: request.name,
       gradeLevel: request.gradeLevel,
     );
-
     await _storage.setString(StorageKeys.authUser, user.toJsonString());
     await _storage.setString(StorageKeys.authToken, 'mock-token-${user.id}');
     return user;
