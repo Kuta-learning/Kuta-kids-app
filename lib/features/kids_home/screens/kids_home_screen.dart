@@ -5,7 +5,11 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../authentication/bloc/auth_bloc.dart';
 import '../../authentication/bloc/auth_event.dart';
-import '../models/home_models.dart';
+import '../bloc/home_bloc.dart';
+import '../bloc/home_event.dart';
+import '../bloc/home_state.dart';
+import '../data/home_repository.dart';
+import '../models/course_model.dart';
 import '../widgets/adventure_card.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/recommended_card.dart';
@@ -23,52 +27,27 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
   late AnimationController _waveController;
   late Animation<double> _waveAnimation;
 
-  static final _adventures = [
-    AdventureData(
-      title: 'English Adventure',
-      emoji: '📖',
-      color: const Color(0xFFDDE8F8),
-      iconColor: const Color(0xFF2563EB),
-      progress: 8,
-      total: 12,
-      progressColor: const Color(0xFF3B82F6),
-    ),
-    AdventureData(
-      title: 'Math Magic',
-      emoji: '🔢',
-      color: const Color(0xFFFFEDD5),
-      iconColor: const Color(0xFFF97316),
-      progress: 4,
-      total: 15,
-      progressColor: const Color(0xFFF97316),
-    ),
-    AdventureData(
-      title: 'Science Safari',
-      emoji: '🌿',
-      color: const Color(0xFFDCFCE7),
-      iconColor: const Color(0xFF16A34A),
-      progress: 10,
-      total: 10,
-      progressColor: const Color(0xFF16A34A),
-    ),
-    AdventureData(
-      title: 'Art Studio',
-      emoji: '🎨',
-      color: const Color(0xFFFCE7F3),
-      iconColor: const Color(0xFFDB2777),
-      progress: 3,
-      total: 8,
-      progressColor: const Color(0xFFDB2777),
-    ),
+  // Emoji list cycling through courses
+  static const _courseEmojis = ['📖', '🔢', '🌿', '🎨', '🎵', '🌍', '🔬', '🏃'];
+  static const _courseColors = [
+    Color(0xFFDDE8F8),
+    Color(0xFFFFEDD5),
+    Color(0xFFDCFCE7),
+    Color(0xFFFCE7F3),
+    Color(0xFFFFF9C4),
+    Color(0xFFE0F2FE),
+    Color(0xFFF3E8FF),
+    Color(0xFFFFEDD5),
   ];
-
-  static final _recommended = [
-    RecommendedData(title: 'Match the Shapes', level: 'Form 35', color: const Color(0xFFFFF7ED)),
-    RecommendedData(title: 'Coloring Fun', level: 'Form 11', color: const Color(0xFFF0FDF4)),
-    RecommendedData(title: 'Math Safari', level: 'Form 55', color: const Color(0xFFFFF7ED)),
-    RecommendedData(title: 'Spelling Bee', level: 'Form 31', color: const Color(0xFFEFF6FF)),
-    RecommendedData(title: 'Logic Lights', level: 'Form 46', color: const Color(0xFFFDF4FF)),
-    RecommendedData(title: 'Animal Sounds', level: 'MATCH LEVEL', color: const Color(0xFFFFF1F2), locked: true),
+  static const _progressColors = [
+    Color(0xFF3B82F6),
+    Color(0xFFF97316),
+    Color(0xFF16A34A),
+    Color(0xFFDB2777),
+    Color(0xFFEAB308),
+    Color(0xFF0EA5E9),
+    Color(0xFF9333EA),
+    Color(0xFFF97316),
   ];
 
   @override
@@ -91,30 +70,153 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      body: SafeArea(
+    return BlocProvider(
+      create: (_) => HomeBloc(HomeRepository())..add(const HomeRequested()),
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF8FAFC),
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(),
+              Expanded(
+                child: BlocBuilder<HomeBloc, HomeState>(
+                  builder: (context, state) {
+                    if (state is HomeLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.orange500,
+                        ),
+                      );
+                    }
+                    if (state is HomeError) {
+                      return _buildError(context, state.message);
+                    }
+                    if (state is HomeLoaded) {
+                      return _buildContent(context, state.courses);
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ),
+              KidsBottomNavBar(
+                selectedIndex: _selectedNav,
+                onTap: (i) => setState(() => _selectedNav = i),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, List<CourseModel> courses) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionHeader('Your Adventures 🗺️', 'View All →'),
+          if (courses.isEmpty)
+            _buildEmptyState()
+          else
+            ...courses.asMap().entries.map((entry) {
+              final i = entry.key;
+              final course = entry.value;
+              return AdventureCard(
+                title: course.title,
+                emoji: _courseEmojis[i % _courseEmojis.length],
+                color: _courseColors[i % _courseColors.length],
+                progress: course.completedLessons,
+                total: course.totalLessons,
+                progressColor: _progressColors[i % _progressColors.length],
+              );
+            }),
+          const SizedBox(height: 8),
+          _buildSectionHeader('Recommended for You ⭐', 'View All →'),
+          _buildRecommendedGrid(courses),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildError(BuildContext context, String message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            _buildHeader(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildSectionHeader('Your Adventures 🗺️', 'View All →'),
-                    ..._adventures.map((a) => AdventureCard(data: a)),
-                    const SizedBox(height: 8),
-                    _buildSectionHeader('Recommended for You ⭐', 'View All →'),
-                    _buildRecommendedGrid(),
+            const Text('😕', style: TextStyle(fontSize: 56)),
+            const SizedBox(height: 16),
+            Text(
+              'Oops! Something went wrong.',
+              style: AppTypography.kidsHeadlineLg.copyWith(
+                fontSize: 18,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              style: AppTypography.kidsBodyMd.copyWith(
+                color: AppColors.textSecondary,
+                fontSize: 13,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            GestureDetector(
+              onTap: () =>
+                  context.read<HomeBloc>().add(const HomeRequested()),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 28, vertical: 14),
+                decoration: BoxDecoration(
+                  color: AppColors.orange500,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.orange500.withValues(alpha: 0.4),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
                   ],
+                ),
+                child: Text(
+                  'Try Again 🔄',
+                  style: AppTypography.kidsBodyMd.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
-            KidsBottomNavBar(
-              selectedIndex: _selectedNav,
-              onTap: (i) => setState(() => _selectedNav = i),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Padding(
+      padding: const EdgeInsets.all(32),
+      child: Center(
+        child: Column(
+          children: [
+            const Text('🎒', style: TextStyle(fontSize: 56)),
+            const SizedBox(height: 12),
+            Text(
+              'No adventures yet!',
+              style: AppTypography.kidsHeadlineLg.copyWith(fontSize: 18),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Your courses will appear here.',
+              style: AppTypography.kidsBodyMd
+                  .copyWith(color: AppColors.textSecondary),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -153,14 +255,16 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
           ),
           const Spacer(),
           GestureDetector(
-            onTap: () => context.read<AuthBloc>().add(const AuthLogoutRequested()),
+            onTap: () =>
+                context.read<AuthBloc>().add(const AuthLogoutRequested()),
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.person_rounded, color: Colors.white, size: 22),
+              child: const Icon(Icons.person_rounded,
+                  color: Colors.white, size: 22),
             ),
           ),
         ],
@@ -198,7 +302,27 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
     );
   }
 
-  Widget _buildRecommendedGrid() {
+  Widget _buildRecommendedGrid(List<CourseModel> courses) {
+    // Show incomplete courses as recommendations
+    final recommended = courses
+        .where((c) => c.progressPercentage < 1.0)
+        .take(6)
+        .toList();
+
+    if (recommended.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Center(
+          child: Text(
+            '🎉 You\'ve completed everything!',
+            style: AppTypography.kidsBodyMd.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GridView.builder(
@@ -210,8 +334,16 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
           mainAxisSpacing: 12,
           childAspectRatio: 1.1,
         ),
-        itemCount: _recommended.length,
-        itemBuilder: (context, i) => RecommendedCard(data: _recommended[i]),
+        itemCount: recommended.length,
+        itemBuilder: (context, i) {
+          final course = recommended[i];
+          return RecommendedCard(
+            title: course.title,
+            level: '${course.completedLessons}/${course.totalLessons} lessons',
+            color: _courseColors[i % _courseColors.length],
+            locked: false,
+          );
+        },
       ),
     );
   }

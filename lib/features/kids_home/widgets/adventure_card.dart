@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_typography.dart';
-import '../models/home_models.dart';
 
 class AdventureCard extends StatefulWidget {
-  final AdventureData data;
+  final String title;
+  final String emoji;
+  final Color color;
+  final int progress;
+  final int total;
+  final Color progressColor;
 
-  const AdventureCard({super.key, required this.data});
+  const AdventureCard({
+    super.key,
+    required this.title,
+    required this.emoji,
+    required this.color,
+    required this.progress,
+    required this.total,
+    required this.progressColor,
+  });
 
   @override
   State<AdventureCard> createState() => _AdventureCardState();
@@ -36,8 +48,7 @@ class _AdventureCardState extends State<AdventureCard>
 
   @override
   Widget build(BuildContext context) {
-    final d = widget.data;
-    final pct = d.progress / d.total;
+    final pct = widget.total > 0 ? widget.progress / widget.total : 0.0;
 
     return GestureDetector(
       onTapDown: (_) => _controller.reverse(),
@@ -65,11 +76,12 @@ class _AdventureCardState extends State<AdventureCard>
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: d.color,
+                  color: widget.color,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
-                  child: Text(d.emoji, style: const TextStyle(fontSize: 26)),
+                  child: Text(widget.emoji,
+                      style: const TextStyle(fontSize: 26)),
                 ),
               ),
               const SizedBox(width: 14),
@@ -78,7 +90,7 @@ class _AdventureCardState extends State<AdventureCard>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      d.title,
+                      widget.title,
                       style: AppTypography.kidsBodyMd.copyWith(
                         fontWeight: FontWeight.w700,
                         fontSize: 15,
@@ -92,17 +104,17 @@ class _AdventureCardState extends State<AdventureCard>
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(100),
                             child: LinearProgressIndicator(
-                              value: pct,
+                              value: pct.clamp(0.0, 1.0),
                               minHeight: 8,
                               backgroundColor: const Color(0xFFE2E8F0),
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                  d.progressColor),
+                                  widget.progressColor),
                             ),
                           ),
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          '${d.progress}/${d.total}',
+                          '${widget.progress}/${widget.total}',
                           style: AppTypography.kidsBodyMd.copyWith(
                             fontSize: 12,
                             color: Colors.black54,
@@ -115,7 +127,8 @@ class _AdventureCardState extends State<AdventureCard>
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Text('🏆', style: TextStyle(fontSize: 12)),
+                          const Text('🏆',
+                              style: TextStyle(fontSize: 12)),
                           const SizedBox(width: 4),
                           Text(
                             'Completed!',

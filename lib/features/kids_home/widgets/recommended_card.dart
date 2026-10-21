@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_typography.dart';
-import '../models/home_models.dart';
 
 class RecommendedCard extends StatefulWidget {
-  final RecommendedData data;
+  final String title;
+  final String level;
+  final Color color;
+  final bool locked;
 
-  const RecommendedCard({super.key, required this.data});
+  const RecommendedCard({
+    super.key,
+    required this.title,
+    required this.level,
+    required this.color,
+    this.locked = false,
+  });
 
   @override
   State<RecommendedCard> createState() => _RecommendedCardState();
@@ -36,8 +44,6 @@ class _RecommendedCardState extends State<RecommendedCard>
 
   @override
   Widget build(BuildContext context) {
-    final d = widget.data;
-
     return GestureDetector(
       onTapDown: (_) => _controller.reverse(),
       onTapUp: (_) => _controller.forward(),
@@ -46,7 +52,7 @@ class _RecommendedCardState extends State<RecommendedCard>
         scale: _controller,
         child: Container(
           decoration: BoxDecoration(
-            color: d.locked ? const Color(0xFFF1F5F9) : d.color,
+            color: widget.locked ? const Color(0xFFF1F5F9) : widget.color,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -65,29 +71,31 @@ class _RecommendedCardState extends State<RecommendedCard>
                   children: [
                     Expanded(
                       child: Center(
-                        child: d.locked
+                        child: widget.locked
                             ? const Icon(Icons.lock_rounded,
                                 size: 40, color: Colors.black26)
-                            : _Placeholder(color: d.color),
+                            : _Placeholder(color: widget.color),
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      d.title,
+                      widget.title,
                       style: AppTypography.kidsBodyMd.copyWith(
                         fontWeight: FontWeight.w700,
                         fontSize: 12,
-                        color: d.locked ? Colors.black38 : Colors.black87,
+                        color: widget.locked
+                            ? Colors.black38
+                            : Colors.black87,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      d.locked ? '🔒 LOCKED' : '📚 ${d.level}',
+                      widget.locked ? '🔒 LOCKED' : '📚 ${widget.level}',
                       style: AppTypography.kidsBodyMd.copyWith(
                         fontSize: 10,
-                        color: d.locked
+                        color: widget.locked
                             ? Colors.black38
                             : const Color(0xFF16A34A),
                         fontWeight: FontWeight.w600,
@@ -96,7 +104,7 @@ class _RecommendedCardState extends State<RecommendedCard>
                   ],
                 ),
               ),
-              if (!d.locked)
+              if (!widget.locked)
                 Positioned(
                   top: 8,
                   right: 8,
