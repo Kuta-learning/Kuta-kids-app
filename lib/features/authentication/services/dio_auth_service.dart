@@ -71,7 +71,7 @@ class DioAuthService implements AuthService {
         'name': request.name,
         'email': request.email,
         'password': request.password,
-        'gradeLevel': _gradeLevelToInt(request.gradeLevel),
+        'gradeLevel': request.gradeLevelInt,
       });
       final data = response.data as Map<String, dynamic>;
       await _saveTokens(data);

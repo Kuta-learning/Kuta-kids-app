@@ -28,12 +28,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _passwordVisible = false;
 
   static const _levelMap = {
-    'Nursery': GradeLevel.kg,
-    'Lower KG': GradeLevel.kg,
-    'Upper KG': GradeLevel.kg,
+    'LKG': GradeLevel.kg,
+    'UKG': GradeLevel.kg,
+    'KG3': GradeLevel.kg,
   };
 
-  static const _levels = ['Nursery', 'Lower KG', 'Upper KG'];
+  // Maps display level to API gradeLevel integer
+  static const _gradeLevelIntMap = {
+    'LKG': 2,
+    'UKG': 3,
+    'KG3': 4,
+  };
+
+  static const _levels = ['LKG', 'UKG', 'KG3'];
 
   @override
   void dispose() {
@@ -50,6 +57,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           email: _emailController.text.trim(),
           password: _passwordController.text,
           gradeLevel: _levelMap[_selectedLevel!]!,
+          gradeLevelInt: _gradeLevelIntMap[_selectedLevel!]!,
         ));
   }
 

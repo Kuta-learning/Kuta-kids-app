@@ -56,6 +56,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         email: event.email,
         password: event.password,
         gradeLevel: event.gradeLevel,
+        gradeLevelInt: event.gradeLevelInt,
       ));
       emit(AuthAuthenticated(user));
     } on AuthException catch (e) {
