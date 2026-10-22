@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
+import '../../../core/router/route_names.dart';
 import '../../authentication/bloc/auth_bloc.dart';
 import '../../authentication/bloc/auth_event.dart';
 import '../bloc/home_bloc.dart';
@@ -108,7 +110,7 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionHeader('Your Adventures 🗺️', 'View All →'),
+          _buildSectionHeader('Your Adventures 🗺️', 'View All →', RouteNames.kidsLearn),
           if (courses.isEmpty)
             _buildEmptyState()
           else
@@ -125,7 +127,7 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
               );
             }),
           const SizedBox(height: 8),
-          _buildSectionHeader('Recommended for You ⭐', 'View All →'),
+          _buildSectionHeader('Recommended for You ⭐', 'View All →', RouteNames.kidsLearn),
           _buildRecommendedGrid(courses),
         ],
       ),
@@ -265,7 +267,7 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
     );
   }
 
-  Widget _buildSectionHeader(String title, String action) {
+  Widget _buildSectionHeader(String title, String action, String route) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
       child: Row(
@@ -280,7 +282,7 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
           ),
           const Spacer(),
           GestureDetector(
-            onTap: () {},
+            onTap: () => context.go(route),
             child: Text(
               action,
               style: AppTypography.kidsBodyMd.copyWith(
