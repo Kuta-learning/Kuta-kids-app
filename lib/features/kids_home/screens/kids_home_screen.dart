@@ -11,7 +11,6 @@ import '../bloc/home_state.dart';
 import '../data/home_repository.dart';
 import '../models/course_model.dart';
 import '../widgets/adventure_card.dart';
-import '../widgets/bottom_nav_bar.dart';
 import '../widgets/recommended_card.dart';
 
 class KidsHomeScreen extends StatefulWidget {
@@ -23,11 +22,9 @@ class KidsHomeScreen extends StatefulWidget {
 
 class _KidsHomeScreenState extends State<KidsHomeScreen>
     with SingleTickerProviderStateMixin {
-  int _selectedNav = 0;
   late AnimationController _waveController;
   late Animation<double> _waveAnimation;
 
-  // Emoji list cycling through courses
   static const _courseEmojis = ['📖', '🔢', '🌿', '🎨', '🎵', '🌍', '🔬', '🏃'];
   static const _courseColors = [
     Color(0xFFDDE8F8),
@@ -97,10 +94,6 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
                     return const SizedBox.shrink();
                   },
                 ),
-              ),
-              KidsBottomNavBar(
-                selectedIndex: _selectedNav,
-                onTap: (i) => setState(() => _selectedNav = i),
               ),
             ],
           ),
@@ -303,7 +296,6 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
   }
 
   Widget _buildRecommendedGrid(List<CourseModel> courses) {
-    // Show incomplete courses as recommendations
     final recommended = courses
         .where((c) => c.progressPercentage < 1.0)
         .take(6)
@@ -341,7 +333,6 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
             title: course.title,
             level: '${course.completedLessons}/${course.totalLessons} lessons',
             color: _courseColors[i % _courseColors.length],
-            locked: false,
           );
         },
       ),
