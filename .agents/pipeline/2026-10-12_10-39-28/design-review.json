@@ -1,0 +1,180 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "id": 1,
+      "severity": "HIGH",
+      "title": "01-requirements.md is missing; design has no verified requirements basis",
+      "location": "Pipeline directory 2026-10-12_10-39-28/",
+      "summary": "The requirements file does not exist. All NFR references and scope claims are unverifiable."
+    },
+    {
+      "id": 2,
+      "severity": "HIGH",
+      "title": "pubspec.yaml is missing 11 of 16 claimed dependencies",
+      "location": "Design Overview / Technology stack; pubspec.yaml",
+      "summary": "equatable, dartz, cached_network_image, video_player, chewie, flutter_pdfview, just_audio, lottie, flutter_animate, intl, get_it, bloc_test, mocktail are all absent. flutter_bloc, go_router, shared_preferences are present but at different versions than stated."
+    },
+    {
+      "id": 3,
+      "severity": "HIGH",
+      "title": "Design claims codebase is nearly empty; actual codebase has substantial existing implementation",
+      "location": "Design Overview, first paragraph",
+      "summary": "The project already has 17+ core files, a working AuthBloc, UserModel, AuthService, MockAuthService, AppTheme, AppColors, AppRouter with 9 routes, KG/grades/profile features. The design will collide with all of them."
+    },
+    {
+      "id": 4,
+      "severity": "HIGH",
+      "title": "Existing AuthBloc contract is incompatible with design's AuthBloc",
+      "location": "Section 4 (Authentication), Presentation Layer",
+      "summary": "Existing AuthBloc takes AuthService, uses UserModel, has different events (AuthCheckRequested/RegisterRequested/LoginRequested/LogoutRequested) and different state names (AuthFailure not AuthError). No migration path is specified."
+    },
+    {
+      "id": 5,
+      "severity": "HIGH",
+      "title": "AppConstants missing kidsMaxGrade, middleMaxGrade, tokenKey, refreshTokenKey, userProfileKey, quizTimerWarningThreshold",
+      "location": "Sections 2.6, 5, 11, 2.4",
+      "summary": "AppConstants only has appName and appVersion. StorageKeys already exists with token keys but the design ignores it. Numeric values for grade thresholds are never specified."
+    },
+    {
+      "id": 6,
+      "severity": "HIGH",
+      "title": "ApiEndpoints missing ~18 endpoints the design relies on",
+      "location": "Section 2.3 (Network), Sections 7-16",
+      "summary": "dashboard, chapters, topics, lessons, lessonDetail, reportProgress, practiceQuestions, submitPracticeAttempt, quiz detail, submitQuiz, mockExamDetail, mockExamSubmit, achievements, search, notifications, markNotificationRead, subscription, parentLink are all absent from ApiEndpoints."
+    },
+    {
+      "id": 7,
+      "severity": "HIGH",
+      "title": "Existing AssetConstants conflicts with design version; animation asset directories not registered in pubspec.yaml",
+      "location": "Section 2.6 (Constants), asset_constants.dart; pubspec.yaml",
+      "summary": "Existing AssetConstants defines path prefixes only. Design's animation/image constants are new. assets/animations/ and assets/images/ are not declared in pubspec.yaml flutter.assets section."
+    },
+    {
+      "id": 8,
+      "severity": "HIGH",
+      "title": "Existing AppRouter is at lib/core/router/app_router.dart with 9 routes; design puts it at lib/app/app_router.dart",
+      "location": "Section 6 (Navigation), Section 21 (File Map)",
+      "summary": "Design does not mention deleting or migrating the existing router. The existing routes for KG/grades features are not addressed."
+    },
+    {
+      "id": 9,
+      "severity": "HIGH",
+      "title": "Existing GradeLevel is an enum (kg, grade6, grade8, grade12); design's Student.grade is int",
+      "location": "Section 3 (Student entity), Section 5 (Grade Routing)",
+      "summary": "No mapping from GradeLevel enum to integer is defined. GradeRoutingBloc expects Student but AuthBloc will emit UserModel. These types are incompatible."
+    },
+    {
+      "id": 10,
+      "severity": "MEDIUM",
+      "title": "lib/features/kids/exam/ domain entities directory is listed as empty in file map",
+      "location": "Section 12 (Mock Exam), Section 21 (File Map), Section 23",
+      "summary": "The file map lists an empty entities directory for exam. If Quiz entities are reused, the directory should not appear or should list explicit imports."
+    },
+    {
+      "id": 11,
+      "severity": "MEDIUM",
+      "title": "Design specifies flutter_bloc ^8.1.6 but project has ^9.0.0",
+      "location": "Technology stack table; pubspec.yaml",
+      "summary": "Pinning to 8.1.6 would downgrade the existing package. The design must reflect the version already installed."
+    },
+    {
+      "id": 12,
+      "severity": "MEDIUM",
+      "title": "Design's LocalStorage interface conflicts with existing one (saveString vs setString, new token methods)",
+      "location": "Section 2.4 (Storage), lib/core/storage/local_storage.dart",
+      "summary": "Existing interface uses setString/getString/remove/clear. Design adds saveToken/getToken/saveRefreshToken/getRefreshToken/clearTokens and renames setString to saveString. SharedPrefsStorage implements existing interface and will not compile against the new one."
+    },
+    {
+      "id": 13,
+      "severity": "MEDIUM",
+      "title": "login_page.dart uses username field; existing AuthService and UserModel use email",
+      "location": "Section 4 (Authentication), Login Page and Data Layer",
+      "summary": "Existing AuthService.login requires email parameter. Design introduces username-based login. The credential field must be consistently chosen and all affected types updated."
+    },
+    {
+      "id": 14,
+      "severity": "MEDIUM",
+      "title": "ContentExplorerPage single-page drill-down with URL updates is architecturally ambiguous",
+      "location": "Section 8 (Learning), UI subsection",
+      "summary": "Design says one page handles all drill-down levels with context.push updating the URL, but separate child routes exist. It is unspecified whether child route builders reuse the parent BLoC or create new instances."
+    },
+    {
+      "id": 15,
+      "severity": "MEDIUM",
+      "title": "DashboardData imports Subject and Achievement from different feature directories, creating cross-feature domain coupling",
+      "location": "Section 3 (DashboardData entity), Section 7 (Dashboard)",
+      "summary": "DashboardData lives in dashboard domain but references Subject (learning) and Achievement (progress). Cross-feature domain imports are not addressed."
+    },
+    {
+      "id": 16,
+      "severity": "MEDIUM",
+      "title": "ProgressBloc Future.wait error policy is underspecified",
+      "location": "Section 13 (Progress), BLoC",
+      "summary": "Which failure message is used when both calls fail? What happens if fetchProgress succeeds but fetchAchievements fails? Policy for partial success is not defined."
+    },
+    {
+      "id": 17,
+      "severity": "MEDIUM",
+      "title": "QuizBloc Stream.periodic timer tick can fire after BLoC is closed",
+      "location": "Section 11 (Quiz), BLoC",
+      "summary": "If close() races with a timer tick, add(QuizTimerTicked(...)) throws StateError. The tick handler must guard with if (!isClosed)."
+    },
+    {
+      "id": 18,
+      "severity": "MEDIUM",
+      "title": "PracticeBloc Future.delayed auto-advance is not cancellable on close() or PracticeRetried",
+      "location": "Section 10 (Practice), BLoC",
+      "summary": "Future.delayed cannot be cancelled. If BLoC is closed or practice is retried before 1.5s elapses, add(NextQuestionAdvanced()) fires on closed/reset BLoC. Replace with a Timer field that is cancelled in close() and PracticeRetried."
+    },
+    {
+      "id": 19,
+      "severity": "MEDIUM",
+      "title": "Design's app.dart defines KutaKidsApp but existing file defines KutaApp; existing lib/app.dart is not listed for deletion",
+      "location": "Section 1 (Entry Point), lib/app/app.dart vs lib/app.dart",
+      "summary": "The existing lib/app.dart must be explicitly listed as a file to delete in Section 21."
+    },
+    {
+      "id": 20,
+      "severity": "MEDIUM",
+      "title": "SearchBloc _SearchExecuted is private and cannot be added directly in tests as the design claims",
+      "location": "Section 14 (Search), BLoC debounce",
+      "summary": "Dart's library-scope privacy prevents test files from instantiating _SearchExecuted. The stated testability benefit does not hold. Use fake_async or make the event package-visible."
+    },
+    {
+      "id": 21,
+      "severity": "MEDIUM",
+      "title": "route_guard.dart redirect uses DetermineGradeRouteUseCase but does not specify how it is injected into the closure",
+      "location": "Section 6 (Navigation), route_guard.dart",
+      "summary": "The redirect callback is a closure; DetermineGradeRouteUseCase must be either injected into AppRouter or resolved from sl() — this is not specified."
+    },
+    {
+      "id": 22,
+      "severity": "NIT",
+      "title": "LoadingIndicator asset-existence check cannot be done synchronously in Flutter",
+      "location": "Section 2.5 (Shared Widgets), loading_indicator.dart",
+      "summary": "Flutter cannot check if an asset exists at runtime without an async rootBundle.load try-catch. The design's conditional is not implementable as described."
+    },
+    {
+      "id": 23,
+      "severity": "NIT",
+      "title": "WillPopScope is deprecated; only PopScope should be referenced",
+      "location": "Section 8 (Learning), lesson_viewer_page.dart",
+      "summary": "Remove the WillPopScope mention. Specify PopScope(canPop: false, onPopInvokedWithResult: ...) only."
+    },
+    {
+      "id": 24,
+      "severity": "NIT",
+      "title": "PDF temp file downloaded to Directory.systemTemp is never cleaned up",
+      "location": "Section 8 (Learning), pdf_viewer_widget.dart",
+      "summary": "Each lesson view creates a new temp file without deleting it on dispose. Add await _tempFile?.delete() in dispose()."
+    },
+    {
+      "id": 25,
+      "severity": "NIT",
+      "title": "Notification entity shadows dart:core Notification class",
+      "location": "Section 3 (Domain Entities — Notification)",
+      "summary": "Naming the entity Notification shadows dart:core's Notification. Rename to AppNotification."
+    }
+  ]
+}
