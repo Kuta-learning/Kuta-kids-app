@@ -9,7 +9,6 @@ import '../widgets/onboarding_illustration_card.dart';
 import '../widgets/onboarding_page_indicator.dart';
 
 class _Page {
-  final String emoji;
   final String title;
   final String body;
   final String asset;
@@ -20,7 +19,6 @@ class _Page {
   final Color badgeIconColor;
 
   const _Page({
-    required this.emoji,
     required this.title,
     required this.body,
     required this.asset,
@@ -48,8 +46,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   static const _pages = [
     _Page(
-      emoji: '🎨',
-      title: 'Learn with Fun!',
+      title: 'Learn with Fun',
       body: 'Letters, numbers, colors and shapes — made just for little learners like you!',
       asset: 'assets/images/onboarding_1.png',
       cardColor: Color(0xFFDDE8F8),
@@ -59,8 +56,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       badgeIconColor: Color(0xFF1565C0),
     ),
     _Page(
-      emoji: '🧩',
-      title: 'Play & Discover!',
+      title: 'Play and Discover',
       body: 'Games, puzzles and activities that make every lesson feel like playtime!',
       asset: 'assets/images/onboarding_2.png',
       cardColor: Color(0xFFFFF9C4),
@@ -70,8 +66,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       badgeIconColor: Color(0xFFF57F17),
     ),
     _Page(
-      emoji: '🏆',
-      title: 'Earn Stars!',
+      title: 'Earn Stars',
       body: 'Complete lessons, collect badges and show your parents how brilliant you are!',
       asset: 'assets/images/onboarding_3.png',
       cardColor: Color(0xFFDCEDC8),
@@ -113,7 +108,17 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     }
   }
 
+  void _back() {
+    if (_currentPage > 0) {
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   bool get _isLast => _currentPage == _pages.length - 1;
+  bool get _isFirst => _currentPage == 0;
 
   @override
   Widget build(BuildContext context) {
@@ -146,44 +151,85 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               ),
               Column(
                 children: [
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 20, top: 8),
-                      child: _isLast
-                          ? const SizedBox(height: 36)
-                          : GestureDetector(
-                              onTap: () => context.go(RouteNames.register),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.6),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  'Skip',
-                                  style: AppTypography.bodyMdMedium.copyWith(
-                                    color: Colors.black54,
-                                    fontWeight: FontWeight.w600,
+                  // Top row: Back (if not first) + Skip
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8),
+                    child: Row(
+                      children: [
+                        if (!_isFirst)
+                          GestureDetector(
+                            onTap: _back,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 6),
+                              decoration: BoxDecoration(
+                                color:
+                                    Colors.white.withValues(alpha: 0.6),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.arrow_back_ios_rounded,
+                                      size: 14, color: Colors.black54),
+                                  const SizedBox(width: 2),
+                                  Text(
+                                    'Back',
+                                    style:
+                                        AppTypography.bodyMdMedium.copyWith(
+                                      color: Colors.black54,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                    ),
                                   ),
+                                ],
+                              ),
+                            ),
+                          )
+                        else
+                          const SizedBox(width: 60),
+                        const Spacer(),
+                        if (!_isLast)
+                          GestureDetector(
+                            onTap: () => context.go(RouteNames.register),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 6),
+                              decoration: BoxDecoration(
+                                color:
+                                    Colors.white.withValues(alpha: 0.6),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                'Skip',
+                                style:
+                                    AppTypography.bodyMdMedium.copyWith(
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
                                 ),
                               ),
                             ),
+                          ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
+
+                  // Illustration PageView
                   SizedBox(
                     height: height * 0.42,
                     child: PageView.builder(
                       controller: _pageController,
-                      onPageChanged: (i) => setState(() => _currentPage = i),
+                      onPageChanged: (i) =>
+                          setState(() => _currentPage = i),
                       itemCount: _pages.length,
                       physics: const BouncingScrollPhysics(),
                       itemBuilder: (context, i) {
                         final p = _pages[i];
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24),
                           child: OnboardingIllustrationCard(
                             asset: p.asset,
                             cardColor: p.cardColor,
@@ -194,84 +240,101 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       },
                     ),
                   ),
+
                   const SizedBox(height: 20),
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: Text(
-                      page.emoji,
-                      key: ValueKey('e$_currentPage'),
-                      style: const TextStyle(fontSize: 44),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
+
+                  // Title
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 28),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 28),
                       child: Text(
                         page.title,
                         key: ValueKey('t$_currentPage'),
                         style: AppTypography.kidsDisplayLg.copyWith(
                           color: Colors.black87,
                           fontWeight: FontWeight.w800,
-                          fontSize: 24,
+                          fontSize: 28,
                         ),
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+
+                  const SizedBox(height: 10),
+
+                  // Body
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 32),
                       child: Text(
                         page.body,
                         key: ValueKey('b$_currentPage'),
                         style: AppTypography.kidsBodyMd.copyWith(
                           color: Colors.black54,
-                          height: 1.5,
-                          fontSize: 14,
+                          height: 1.55,
+                          fontSize: 16,
                         ),
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+
+                  const SizedBox(height: 20),
+
+                  // Page indicator
                   OnboardingPageIndicator(
                     count: _pages.length,
                     currentIndex: _currentPage,
                   ),
+
                   const Spacer(),
+
+                  // Next / Get Started button
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                    padding:
+                        const EdgeInsets.fromLTRB(24, 0, 24, 24),
                     child: ScaleTransition(
                       scale: _btnScale,
                       child: GestureDetector(
                         onTap: _next,
                         child: Container(
                           width: double.infinity,
-                          height: 58,
+                          height: 60,
                           decoration: BoxDecoration(
                             color: AppColors.orange500,
                             borderRadius: BorderRadius.circular(32),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.orange500.withValues(alpha: 0.45),
+                                color: AppColors.orange500
+                                    .withValues(alpha: 0.45),
                                 blurRadius: 16,
                                 offset: const Offset(0, 6),
                               ),
                             ],
                           ),
-                          child: Center(
-                            child: Text(
-                              _isLast ? "Let's Go! 🚀" : 'Next  →',
-                              style: AppTypography.kidsHeadlineLg.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w800,
-                                fontSize: 18,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                _isLast ? "Let's Go" : 'Next',
+                                style:
+                                    AppTypography.kidsHeadlineLg.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 20,
+                                ),
                               ),
-                            ),
+                              const SizedBox(width: 8),
+                              const Icon(
+                                Icons.arrow_forward_rounded,
+                                color: Colors.white,
+                                size: 22,
+                              ),
+                            ],
                           ),
                         ),
                       ),

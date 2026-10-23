@@ -7,21 +7,14 @@ import '../../features/authentication/screens/register_screen.dart';
 import '../../features/authentication/screens/reset_password_screen.dart';
 import '../../features/authentication/screens/verify_otp_screen.dart';
 import '../../features/common/screens/splash_screen.dart';
-import '../../features/kids/games/screens/games_screen.dart';
-import '../../features/kids/practice/presentation/pages/practice_home_page.dart';
-import '../../features/kids_home/screens/kids_home_screen.dart';
-import '../../features/kids_home/screens/kids_shell_screen.dart';
-import '../../features/learning/screens/learn_screen.dart';
 import '../../features/kids_home/screens/kids_home_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
-import '../../features/profile/screens/profile_screen.dart';
 import 'route_names.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: RouteNames.splash,
     routes: [
-      // Auth flow
       GoRoute(
         path: RouteNames.splash,
         name: 'splash',
@@ -42,41 +35,6 @@ class AppRouter {
         name: 'register',
         builder: (context, state) => const RegisterScreen(),
       ),
-
-      // Kids shell with persistent bottom nav
-      ShellRoute(
-        builder: (context, state, child) =>
-            KidsShellScreen(child: child),
-        routes: [
-          GoRoute(
-            path: RouteNames.kidsDashboard,
-            name: 'kidsDashboard',
-            builder: (context, state) => const KidsHomeScreen(),
-          ),
-          GoRoute(
-            path: RouteNames.kidsLearn,
-            name: 'kidsLearn',
-            builder: (context, state) => const LearnScreen(),
-          ),
-          GoRoute(
-            path: RouteNames.kidsPractice,
-            name: 'kidsPractice',
-            builder: (context, state) => const PracticeHomePage(),
-          ),
-          GoRoute(
-            path: RouteNames.kidsGames,
-            name: 'kidsGames',
-            builder: (context, state) => const GamesScreen(),
-          ),
-          GoRoute(
-            path: RouteNames.kidsProfile,
-            name: 'kidsProfile',
-            builder: (context, state) => const ProfileScreen(),
-          ),
-        ],
-      ),
-
-      // Legacy stubs
       GoRoute(
         path: RouteNames.forgotPassword,
         name: 'forgotPassword',
