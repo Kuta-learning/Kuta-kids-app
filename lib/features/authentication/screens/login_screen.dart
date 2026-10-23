@@ -21,7 +21,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
   bool _passwordVisible = false;
 
   @override
@@ -31,13 +30,16 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  String _sanitizeEmail(String value) => value.trim().toLowerCase();
+
   Future<void> _onLogin() async {
     if (!_formKey.currentState!.validate()) return;
     context.read<AuthBloc>().add(AuthLoginRequested(
-          email: _emailController.text.trim(),
+          email: _sanitizeEmail(_emailController.text),
           password: _passwordController.text,
         ));
   }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
@@ -87,11 +89,32 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               Center(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20, vertical: 24),
                   child: Column(
                     children: [
-                      const Text('👋', style: TextStyle(fontSize: 52)),
-                      const SizedBox(height: 4),
+                      // Logo placeholder
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.1),
+                              blurRadius: 16,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.menu_book_rounded,
+                          size: 40,
+                          color: AppColors.secondAccent,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
                       Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
@@ -115,9 +138,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Column(
                                   children: [
                                     Text(
-                                      'Welcome Back! 🌈',
-                                      style: AppTypography.kidsDisplayLg.copyWith(
-                                        fontSize: 22,
+                                      'Welcome Back!',
+                                      style: AppTypography.kidsDisplayLg
+                                          .copyWith(
+                                        fontSize: 26,
                                         fontWeight: FontWeight.w800,
                                         color: Colors.black87,
                                       ),
@@ -127,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       'Ready to learn something new today?',
                                       style: AppTypography.kidsBodyMd.copyWith(
                                         color: AppColors.textSecondary,
-                                        fontSize: 13,
+                                        fontSize: 15,
                                       ),
                                       textAlign: TextAlign.center,
                                     ),
@@ -135,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               const SizedBox(height: 28),
-                              _FieldLabel(label: "Parent's Email", emoji: '📧'),
+                              _FieldLabel(label: "Parent's Email"),
                               const SizedBox(height: 6),
                               _KidsTextField(
                                 controller: _emailController,
@@ -144,23 +168,28 @@ class _LoginScreenState extends State<LoginScreen> {
                                 keyboardType: TextInputType.emailAddress,
                                 validator: (v) {
                                   if (v == null || v.trim().isEmpty) {
-                                    return 'Please enter your email';
+                                    return 'Email address is required';
                                   }
-                                  if (!v.contains('@')) return 'Enter a valid email';
+                                  final email = v.trim().toLowerCase();
+                                  final emailRegex = RegExp(
+                                      r'^[\w\-.]+@([\w\-]+\.)+[\w\-]{2,}$');
+                                  if (!emailRegex.hasMatch(email)) {
+                                    return 'Please enter a valid email address';
+                                  }
                                   return null;
                                 },
                               ),
                               const SizedBox(height: 16),
-                              _FieldLabel(label: 'Password', emoji: '🔒'),
+                              _FieldLabel(label: 'Password'),
                               const SizedBox(height: 6),
                               _KidsTextField(
                                 controller: _passwordController,
-                                hint: '••••••••',
+                                hint: 'Enter your password',
                                 prefixIcon: Icons.lock_rounded,
                                 obscureText: !_passwordVisible,
                                 suffixIcon: GestureDetector(
-                                  onTap: () => setState(
-                                      () => _passwordVisible = !_passwordVisible),
+                                  onTap: () => setState(() =>
+                                      _passwordVisible = !_passwordVisible),
                                   child: Icon(
                                     _passwordVisible
                                         ? Icons.visibility_rounded
@@ -170,19 +199,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                                 validator: (v) {
-                                  if (v == null || v.length < 8) {
-                                    return 'Minimum 8 characters';
+                                  if (v == null || v.isEmpty) {
+                                    return 'Password is required';
+                                  }
+                                  if (v.length < 8) {
+                                    return 'Password must be at least 8 characters';
                                   }
                                   return null;
                                 },
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                'Minimum 8 characters with letters and numbers.',
-                                style: AppTypography.kidsBodyMd.copyWith(
-                                  fontSize: 11,
-                                  color: AppColors.textSecondary,
-                                ),
                               ),
                               Align(
                                 alignment: Alignment.centerRight,
@@ -191,19 +215,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                       context.go(RouteNames.forgotPassword),
                                   style: TextButton.styleFrom(
                                     padding: EdgeInsets.zero,
-                                    minimumSize: const Size(0, 32),
+                                    minimumSize: const Size(0, 36),
                                   ),
                                   child: Text(
                                     'Forgot Password?',
                                     style: AppTypography.kidsBodyMd.copyWith(
                                       color: AppColors.orange500,
                                       fontWeight: FontWeight.w700,
-                                      fontSize: 13,
+                                      fontSize: 14,
                                     ),
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 4),
                               GestureDetector(
                                 onTap: isLoading ? null : _onLogin,
                                 child: AnimatedContainer(
@@ -212,7 +236,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   height: 56,
                                   decoration: BoxDecoration(
                                     color: isLoading
-                                        ? AppColors.orange500.withValues(alpha: 0.7)
+                                        ? AppColors.orange500
+                                            .withValues(alpha: 0.7)
                                         : AppColors.orange500,
                                     borderRadius: BorderRadius.circular(28),
                                     boxShadow: [
@@ -240,18 +265,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                             children: [
                                               Text(
                                                 'Login',
-                                                style: AppTypography.kidsHeadlineLg
+                                                style: AppTypography
+                                                    .kidsHeadlineLg
                                                     .copyWith(
                                                   color: Colors.white,
                                                   fontWeight: FontWeight.w800,
-                                                  fontSize: 16,
+                                                  fontSize: 18,
                                                 ),
                                               ),
                                               const SizedBox(width: 8),
                                               const Icon(
                                                 Icons.arrow_forward_rounded,
                                                 color: Colors.white,
-                                                size: 20,
+                                                size: 22,
                                               ),
                                             ],
                                           ),
@@ -272,7 +298,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       'or continue with',
                                       style: AppTypography.kidsBodyMd.copyWith(
                                         color: AppColors.textSecondary,
-                                        fontSize: 12,
+                                        fontSize: 13,
                                       ),
                                     ),
                                   ),
@@ -316,7 +342,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             text: "Don't have an account? ",
                             style: AppTypography.kidsBodyMd.copyWith(
                               color: AppColors.textSecondary,
-                              fontSize: 14,
+                              fontSize: 15,
                             ),
                             children: [
                               TextSpan(
@@ -324,7 +350,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 style: AppTypography.kidsBodyMd.copyWith(
                                   color: AppColors.orange500,
                                   fontWeight: FontWeight.w700,
-                                  fontSize: 14,
+                                  fontSize: 15,
                                 ),
                               ),
                             ],
@@ -345,25 +371,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
 class _FieldLabel extends StatelessWidget {
   final String label;
-  final String emoji;
 
-  const _FieldLabel({required this.label, required this.emoji});
+  const _FieldLabel({required this.label});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(emoji, style: const TextStyle(fontSize: 14)),
-        const SizedBox(width: 6),
-        Text(
-          label,
-          style: AppTypography.kidsBodyMd.copyWith(
-            fontWeight: FontWeight.w700,
-            color: Colors.black87,
-            fontSize: 13,
-          ),
-        ),
-      ],
+    return Text(
+      label,
+      style: AppTypography.kidsBodyMd.copyWith(
+        fontWeight: FontWeight.w700,
+        color: Colors.black87,
+        fontSize: 15,
+      ),
     );
   }
 }
@@ -394,20 +413,21 @@ class _KidsTextField extends StatelessWidget {
       obscureText: obscureText,
       keyboardType: keyboardType,
       validator: validator,
-      style: AppTypography.kidsBodyMd.copyWith(
-          fontSize: 14, color: Colors.black87),
+      style: AppTypography.kidsBodyMd
+          .copyWith(fontSize: 15, color: Colors.black87),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: AppTypography.kidsBodyMd.copyWith(
-          fontSize: 14,
+          fontSize: 15,
           color: AppColors.textSecondary,
         ),
-        prefixIcon: Icon(prefixIcon, size: 18, color: AppColors.secondAccent),
+        prefixIcon:
+            Icon(prefixIcon, size: 20, color: AppColors.secondAccent),
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: const Color(0xFFF8FAFC),
         contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
@@ -426,7 +446,12 @@ class _KidsTextField extends StatelessWidget {
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFFEF4444), width: 2),
+          borderSide:
+              const BorderSide(color: Color(0xFFEF4444), width: 2),
+        ),
+        errorStyle: AppTypography.kidsBodyMd.copyWith(
+          fontSize: 13,
+          color: const Color(0xFFEF4444),
         ),
       ),
     );
@@ -451,7 +476,7 @@ class _SocialButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 48,
+        height: 52,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
@@ -467,14 +492,14 @@ class _SocialButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: iconColor, size: 22),
+            Icon(icon, color: iconColor, size: 24),
             const SizedBox(width: 8),
             Text(
               label,
               style: AppTypography.kidsBodyMd.copyWith(
                 fontWeight: FontWeight.w700,
                 color: Colors.black87,
-                fontSize: 14,
+                fontSize: 15,
               ),
             ),
           ],
