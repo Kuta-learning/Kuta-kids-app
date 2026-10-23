@@ -1,39 +1,36 @@
-part of 'auth_bloc.dart';
+import '../../../core/constants/grade_level.dart';
 
-/// Base class for all authentication events.
-sealed class AuthEvent {
+abstract class AuthEvent {
   const AuthEvent();
 }
 
-/// Dispatched on app startup to check if a session exists in local storage.
-final class AuthCheckRequested extends AuthEvent {
+class AuthCheckRequested extends AuthEvent {
   const AuthCheckRequested();
 }
 
-/// Dispatched when the user submits the registration form.
-final class RegisterRequested extends AuthEvent {
+class AuthLoginRequested extends AuthEvent {
+  final String email;
+  final String password;
+
+  const AuthLoginRequested({required this.email, required this.password});
+}
+
+class AuthRegisterRequested extends AuthEvent {
   final String name;
   final String email;
   final String password;
   final GradeLevel gradeLevel;
+  final int gradeLevelInt;
 
-  const RegisterRequested({
+  const AuthRegisterRequested({
     required this.name,
     required this.email,
     required this.password,
     required this.gradeLevel,
+    required this.gradeLevelInt,
   });
 }
 
-/// Dispatched when the user submits the login form.
-final class LoginRequested extends AuthEvent {
-  final String email;
-  final String password;
-
-  const LoginRequested({required this.email, required this.password});
-}
-
-/// Dispatched when the user taps the logout button.
-final class LogoutRequested extends AuthEvent {
-  const LogoutRequested();
+class AuthLogoutRequested extends AuthEvent {
+  const AuthLogoutRequested();
 }
