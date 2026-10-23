@@ -156,3 +156,43 @@ class DioAuthService implements AuthService {
     }
   }
 }
+
+  Future<void> forgotPassword(String email) async {
+    try {
+      await _dio.post('/auth/forgot-password', data: {'email': email});
+    } on DioException catch (e) {
+      throw AuthException(_errorMessage(e));
+    }
+  }
+
+  Future<String> verifyOtp({
+    required String email,
+    required String otp,
+  }) async {
+    try {
+      final response = await _dio.post('/auth/verify-otp', data: {
+        'email': email,
+        'otp': otp,
+        'type': 'FORGOT_PASSWORD',
+      });
+      return (response.data as Map<String, dynamic>)['resetToken'] as String;
+    } on DioException catch (e) {
+      throw AuthException(_errorMessage(e));
+    }
+  }
+
+  Future<void> resetPassword({
+    required String email,
+    required String resetToken,
+    required String password,
+  }) async {
+    try {
+      await _dio.post('/auth/reset-password', data: {
+        'email': email,
+        'resetToken': resetToken,
+        'password': password,
+      });
+    } on DioException catch (e) {
+      throw AuthException(_errorMessage(e));
+    }
+  }
