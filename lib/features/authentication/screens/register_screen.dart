@@ -66,6 +66,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
+          context.go(RouteNames.kidsDashboard);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Account created! Please log in to continue.'),
