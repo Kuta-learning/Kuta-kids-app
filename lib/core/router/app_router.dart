@@ -12,7 +12,6 @@ import '../../features/kids/practice/presentation/pages/practice_home_page.dart'
 import '../../features/kids_home/screens/kids_home_screen.dart';
 import '../../features/kids_home/screens/kids_shell_screen.dart';
 import '../../features/learning/screens/learn_screen.dart';
-import '../../features/kids_home/screens/kids_home_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
 import 'route_names.dart';
@@ -21,7 +20,6 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: RouteNames.splash,
     routes: [
-      // Auth flow
       GoRoute(
         path: RouteNames.splash,
         name: 'splash',
@@ -42,11 +40,33 @@ class AppRouter {
         name: 'register',
         builder: (context, state) => const RegisterScreen(),
       ),
+      GoRoute(
+        path: RouteNames.forgotPassword,
+        name: 'forgotPassword',
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.verifyOtp,
+        name: 'verifyOtp',
+        builder: (context, state) => VerifyOtpScreen(
+          email: state.extra as String? ?? '',
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.resetPassword,
+        name: 'resetPassword',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, String>? ?? {};
+          return ResetPasswordScreen(
+            email: extra['email'] ?? '',
+            resetToken: extra['resetToken'] ?? '',
+          );
+        },
+      ),
 
-      // Kids shell with persistent bottom nav
+      // Kids shell — persistent bottom nav across all tabs
       ShellRoute(
-        builder: (context, state, child) =>
-            KidsShellScreen(child: child),
+        builder: (context, state, child) => KidsShellScreen(child: child),
         routes: [
           GoRoute(
             path: RouteNames.kidsDashboard,
@@ -77,34 +97,6 @@ class AppRouter {
       ),
 
       // Legacy stubs
-      GoRoute(
-        path: RouteNames.forgotPassword,
-        name: 'forgotPassword',
-        builder: (context, state) => const ForgotPasswordScreen(),
-      ),
-      GoRoute(
-        path: RouteNames.verifyOtp,
-        name: 'verifyOtp',
-        builder: (context, state) => VerifyOtpScreen(
-          email: state.extra as String? ?? '',
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.resetPassword,
-        name: 'resetPassword',
-        builder: (context, state) {
-          final extra = state.extra as Map<String, String>? ?? {};
-          return ResetPasswordScreen(
-            email: extra['email'] ?? '',
-            resetToken: extra['resetToken'] ?? '',
-          );
-        },
-      ),
-      GoRoute(
-        path: RouteNames.kidsDashboard,
-        name: 'kidsDashboard',
-        builder: (context, state) => const KidsHomeScreen(),
-      ),
       GoRoute(
         path: RouteNames.kgHome,
         name: 'kgHome',

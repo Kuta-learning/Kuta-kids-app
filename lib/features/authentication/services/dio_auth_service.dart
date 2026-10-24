@@ -88,75 +88,6 @@ class DioAuthService implements AuthService {
     await prefs.remove(_refreshTokenKey);
   }
 
-  Future<void> _saveTokens(Map<String, dynamic> data) async {
-    final prefs = await SharedPreferences.getInstance();
-    if (data['token'] != null) {
-      await prefs.setString(_tokenKey, data['token'] as String);
-    }
-    if (data['refreshToken'] != null) {
-      await prefs.setString(_refreshTokenKey, data['refreshToken'] as String);
-    }
-  }
-
-  UserModel _userFromResponse(Map<String, dynamic> data) {
-    final student = data['student'] as Map<String, dynamic>? ?? data;
-    return UserModel(
-      id: student['_id']?.toString() ?? student['id']?.toString() ?? '',
-      email: student['email']?.toString() ?? '',
-      name: student['name']?.toString() ?? '',
-      gradeLevel: _gradeLevelFromInt(student['gradeLevel'] as int? ?? 1),
-    );
-  }
-
-  GradeLevel _gradeLevelFromInt(int level) {
-    switch (level) {
-      case 1:
-      case 2:
-      case 3:
-      case 4:
-        return GradeLevel.kg;
-      case 6:
-        return GradeLevel.grade6;
-      case 8:
-        return GradeLevel.grade8;
-      case 12:
-        return GradeLevel.grade12;
-      default:
-        return GradeLevel.kg;
-    }
-  }
-
-  int _gradeLevelToInt(GradeLevel level) {
-    switch (level) {
-      case GradeLevel.kg:
-        return 2; // default LKG
-      case GradeLevel.grade6:
-        return 6;
-      case GradeLevel.grade8:
-        return 8;
-      case GradeLevel.grade12:
-        return 12;
-    }
-  }
-
-  String _errorMessage(DioException e) {
-    final data = e.response?.data;
-    if (data is Map && data['message'] != null) {
-      return data['message'].toString();
-    }
-    switch (e.response?.statusCode) {
-      case 401:
-        return 'Invalid email or password.';
-      case 409:
-        return 'An account with this email already exists.';
-      case 400:
-        return 'Please check your details and try again.';
-      default:
-        return 'Something went wrong. Please try again.';
-    }
-  }
-}
-
   Future<void> forgotPassword(String email) async {
     try {
       await _dio.post('/auth/forgot-password', data: {'email': email});
@@ -196,3 +127,60 @@ class DioAuthService implements AuthService {
       throw AuthException(_errorMessage(e));
     }
   }
+
+  Future<void> _saveTokens(Map<String, dynamic> data) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (data['token'] != null) {
+      await prefs.setString(_tokenKey, data['token'] as String);
+    }
+    if (data['refreshToken'] != null) {
+      await prefs.setString(
+          _refreshTokenKey, data['refreshToken'] as String);
+    }
+  }
+
+  UserModel _userFromResponse(Map<String, dynamic> data) {
+    final student = data['student'] as Map<String, dynamic>? ?? data;
+    return UserModel(
+      id: student['_id']?.toString() ?? student['id']?.toString() ?? '',
+      email: student['email']?.toString() ?? '',
+      name: student['name']?.toString() ?? '',
+      gradeLevel: _gradeLevelFromInt(student['gradeLevel'] as int? ?? 1),
+    );
+  }
+
+  GradeLevel _gradeLevelFromInt(int level) {
+    switch (level) {
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+        return GradeLevel.kg;
+      case 6:
+        return GradeLevel.grade6;
+      case 8:
+        return GradeLevel.grade8;
+      case 12:
+        return GradeLevel.grade12;
+      default:
+        return GradeLevel.kg;
+    }
+  }
+
+  String _errorMessage(DioException e) {
+    final data = e.response?.data;
+    if (data is Map && data['message'] != null) {
+      return data['message'].toString();
+    }
+    switch (e.response?.statusCode) {
+      case 401:
+        return 'Invalid email or password.';
+      case 409:
+        return 'An account with this email already exists.';
+      case 400:
+        return 'Please check your details and try again.';
+      default:
+        return 'Something went wrong. Please try again.';
+    }
+  }
+}
