@@ -12,6 +12,10 @@ class RouteNames {
   static const String levelSelection = '/level-selection';
   static const String kidsHome = '/kids';
   static const String kidsDashboard = '/kids/home';
+  static const String kidsLearn = '/kids/learn';
+  static const String kidsPractice = '/kids/practice';
+  static const String kidsGames = '/kids/games';
+  static const String kidsProfile = '/kids/profile';
   static const String categories = '/kids/learn';
   static const String lessonList = '/kids/learn/lessons';
   static const String lessonDetail = '/kids/learn/lesson';
