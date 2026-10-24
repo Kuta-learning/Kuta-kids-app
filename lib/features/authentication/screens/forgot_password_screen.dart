@@ -29,11 +29,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
     try {
-      await DioAuthService().forgotPassword(_emailController.text.trim());
+      await DioAuthService()
+          .forgotPassword(_emailController.text.trim().toLowerCase());
       if (mounted) {
         context.go(
           RouteNames.verifyOtp,
-          extra: _emailController.text.trim(),
+          extra: _emailController.text.trim().toLowerCase(),
         );
       }
     } catch (e) {
@@ -53,218 +54,255 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFBBDEFB), Color(0xFFFFE0B2)],
+      backgroundColor: AppColors.surfaceApp,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Background glows
+          Positioned(
+            top: -60,
+            right: -60,
+            child: _GlowCircle(
+                color: AppColors.orange500.withValues(alpha: 0.08),
+                size: 300),
           ),
-        ),
-        child: SafeArea(
-          child: Stack(
-            children: [
-              Positioned(
-                top: -30,
-                left: -30,
-                child: _BlurCircle(color: const Color(0xFF90CAF9), size: 180),
-              ),
-              Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 16),
-                  child: Column(
-                    children: [
-                      const Text('🔑', style: TextStyle(fontSize: 52)),
-                      const SizedBox(height: 4),
-                      Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(32),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.08),
-                              blurRadius: 24,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
+          Positioned(
+            bottom: -60,
+            left: -60,
+            child: _GlowCircle(
+                color: AppColors.navy700.withValues(alpha: 0.06),
+                size: 280),
+          ),
+
+          SafeArea(
+            child: SingleChildScrollView(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 32),
+
+                  // Lock reset icon
+                  Container(
+                    width: 88,
+                    height: 88,
+                    decoration: BoxDecoration(
+                      color: AppColors.orange500.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: const Icon(
+                      Icons.lock_reset_rounded,
+                      size: 44,
+                      color: AppColors.secondAccent,
+                    ),
+                  ),
+
+                  const SizedBox(height: 28),
+
+                  // Title
+                  Text(
+                    'Forgot Password?',
+                    style: AppTypography.displayLg.copyWith(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Subtitle
+                  Text(
+                    "No worries! Enter your school email address and we'll send you instructions to reset your password.",
+                    style: AppTypography.bodyLg.copyWith(
+                      color: AppColors.textSecondary,
+                      fontSize: 15,
+                      height: 1.55,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // White card
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.06),
+                          blurRadius: 20,
+                          offset: const Offset(0, 4),
                         ),
-                        padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Center(
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      'Forgot Password? 🤔',
-                                      style: AppTypography.kidsDisplayLg
-                                          .copyWith(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.w800,
-                                        color: Colors.black87,
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(24),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Email Address',
+                            style: AppTypography.bodyMdMedium.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                              fontSize: 15,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            style: AppTypography.bodyMd
+                                .copyWith(fontSize: 15, color: AppColors.textPrimary),
+                            decoration: InputDecoration(
+                              hintText: 'student@example.com',
+                              hintStyle: AppTypography.bodyMd.copyWith(
+                                color: AppColors.textSecondary,
+                                fontSize: 15,
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.mail_outline_rounded,
+                                size: 20,
+                                color: AppColors.textSecondary,
+                              ),
+                              filled: true,
+                              fillColor: AppColors.containerHigh,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 16),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                    color: AppColors.orange500, width: 2),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                    color: Color(0xFFEF4444)),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                    color: Color(0xFFEF4444), width: 2),
+                              ),
+                            ),
+                            validator: (v) {
+                              if (v == null || v.trim().isEmpty) {
+                                return 'Email address is required';
+                              }
+                              final emailRegex = RegExp(
+                                  r'^[\w\-.]+@([\w\-]+\.)+[\w\-]{2,}$');
+                              if (!emailRegex
+                                  .hasMatch(v.trim().toLowerCase())) {
+                                return 'Please enter a valid email address';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 56,
+                            child: ElevatedButton.icon(
+                              onPressed: _isLoading ? null : _onSubmit,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.orange500,
+                                foregroundColor: Colors.white,
+                                disabledBackgroundColor:
+                                    AppColors.orange500.withValues(alpha: 0.7),
+                                elevation: 0,
+                                shape: const StadiumBorder(),
+                              ),
+                              icon: _isLoading
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2.5,
                                       ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      "Enter your email and we'll send you a code.",
-                                      style: AppTypography.kidsBodyMd.copyWith(
-                                        color: AppColors.textSecondary,
-                                        fontSize: 13,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
+                                    )
+                                  : const Icon(Icons.send_rounded, size: 20),
+                              label: Text(
+                                _isLoading ? 'Sending...' : 'Send Instructions',
+                                style: AppTypography.titleMd.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
                                 ),
                               ),
-                              const SizedBox(height: 28),
-                              Row(
-                                children: [
-                                  const Text('📧',
-                                      style: TextStyle(fontSize: 14)),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    "Parent's Email",
-                                    style: AppTypography.kidsBodyMd.copyWith(
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.black87,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 6),
-                              TextFormField(
-                                controller: _emailController,
-                                keyboardType: TextInputType.emailAddress,
-                                style: AppTypography.kidsBodyMd.copyWith(
-                                    fontSize: 14, color: Colors.black87),
-                                decoration: InputDecoration(
-                                  hintText: 'parent@example.com',
-                                  hintStyle: AppTypography.kidsBodyMd.copyWith(
-                                    fontSize: 14,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                  prefixIcon: const Icon(Icons.mail_rounded,
-                                      size: 18,
-                                      color: AppColors.secondAccent),
-                                  filled: true,
-                                  fillColor: const Color(0xFFF8FAFC),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 14),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                    borderSide: const BorderSide(
-                                        color: Color(0xFFE2E8F0)),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                    borderSide: const BorderSide(
-                                        color: Color(0xFFE2E8F0)),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                    borderSide: BorderSide(
-                                        color: AppColors.orange500, width: 2),
-                                  ),
-                                  errorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                    borderSide: const BorderSide(
-                                        color: Color(0xFFEF4444)),
-                                  ),
-                                ),
-                                validator: (v) {
-                                  if (v == null || v.trim().isEmpty) {
-                                    return 'Please enter your email';
-                                  }
-                                  if (!v.contains('@')) {
-                                    return 'Enter a valid email';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 24),
-                              GestureDetector(
-                                onTap: _isLoading ? null : _onSubmit,
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  width: double.infinity,
-                                  height: 56,
-                                  decoration: BoxDecoration(
-                                    color: _isLoading
-                                        ? AppColors.orange500
-                                            .withValues(alpha: 0.7)
-                                        : AppColors.orange500,
-                                    borderRadius: BorderRadius.circular(28),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppColors.orange500
-                                            .withValues(alpha: 0.4),
-                                        blurRadius: 14,
-                                        offset: const Offset(0, 5),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Center(
-                                    child: _isLoading
-                                        ? const SizedBox(
-                                            width: 24,
-                                            height: 24,
-                                            child: CircularProgressIndicator(
-                                              color: Colors.white,
-                                              strokeWidth: 2.5,
-                                            ),
-                                          )
-                                        : Text(
-                                            'Send Code 📨',
-                                            style: AppTypography.kidsHeadlineLg
-                                                .copyWith(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w800,
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              Center(
-                                child: GestureDetector(
-                                  onTap: () => context.go(RouteNames.login),
-                                  child: Text(
-                                    '← Back to Login',
-                                    style: AppTypography.kidsBodyMd.copyWith(
-                                      color: AppColors.orange500,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Back to Login
+                  GestureDetector(
+                    onTap: () => context.go(RouteNames.login),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.arrow_back_rounded,
+                          size: 18,
+                          color: Color(0xFF2563EB),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Back to Login',
+                          style: AppTypography.bodyMdMedium.copyWith(
+                            color: const Color(0xFF2563EB),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+
+                  const SizedBox(height: 48),
+
+                  // Footer
+                  Text(
+                    '© 2024 Kuta Learning. All rights reserved.',
+                    style: AppTypography.labelSm.copyWith(
+                      color: AppColors.textSecondary,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 }
 
-class _BlurCircle extends StatelessWidget {
+class _GlowCircle extends StatelessWidget {
   final Color color;
   final double size;
 
-  const _BlurCircle({required this.color, required this.size});
+  const _GlowCircle({required this.color, required this.size});
 
   @override
   Widget build(BuildContext context) {
@@ -273,10 +311,7 @@ class _BlurCircle extends StatelessWidget {
       child: Container(
         width: size,
         height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color.withValues(alpha: 0.6),
-        ),
+        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
       ),
     );
   }
