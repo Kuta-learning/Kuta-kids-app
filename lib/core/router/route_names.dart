@@ -17,6 +17,7 @@ class RouteNames {
   static const String kidsGames = '/kids/games';
   static const String kidsProfile = '/kids/profile';
   static const String categories = '/kids/learn';
+  static const String courseDetail = '/kids/learn/course';
   static const String lessonList = '/kids/learn/lessons';
   static const String lessonDetail = '/kids/learn/lesson';
   static const String storyLesson = '/kids/learn/story';

@@ -11,6 +11,7 @@ import '../../features/kids/games/screens/games_screen.dart';
 import '../../features/kids/practice/presentation/pages/practice_home_page.dart';
 import '../../features/kids_home/screens/kids_home_screen.dart';
 import '../../features/kids_home/screens/kids_shell_screen.dart';
+import '../../features/learning/screens/course_detail_screen.dart';
 import '../../features/learning/screens/learn_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
@@ -77,6 +78,19 @@ class AppRouter {
             path: RouteNames.kidsLearn,
             name: 'kidsLearn',
             builder: (context, state) => const LearnScreen(),
+            routes: [
+              GoRoute(
+                path: 'course',
+                name: 'courseDetail',
+                builder: (context, state) {
+                  final extra = state.extra as Map<String, String>? ?? {};
+                  return CourseDetailScreen(
+                    courseId: extra['courseId'] ?? '',
+                    courseTitle: extra['courseTitle'] ?? '',
+                  );
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: RouteNames.kidsPractice,

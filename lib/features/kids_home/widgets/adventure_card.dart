@@ -1,23 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_typography.dart';
+import '../../../core/router/route_names.dart';
 
 class AdventureCard extends StatefulWidget {
+  final String courseId;
   final String title;
   final String emoji;
   final Color color;
   final int progress;
   final int total;
   final Color progressColor;
+  final String? thumbnailUrl;
+  final VoidCallback? onTap;
 
   const AdventureCard({
     super.key,
+    required this.courseId,
     required this.title,
     required this.emoji,
     required this.color,
     required this.progress,
     required this.total,
     required this.progressColor,
+    this.thumbnailUrl,
+    this.onTap,
   });
 
   @override
@@ -46,110 +54,139 @@ class _AdventureCardState extends State<AdventureCard>
     super.dispose();
   }
 
+  void _onTap() {
+    context.go(
+      '${RouteNames.kidsLearn}/course',
+      extra: {
+        'courseId': widget.courseId,
+        'courseTitle': widget.title,
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final pct = widget.total > 0 ? widget.progress / widget.total : 0.0;
+    final pctInt = (pct * 100).round();
 
     return GestureDetector(
+      onTap: widget.onTap,
       onTapDown: (_) => _controller.reverse(),
-      onTapUp: (_) => _controller.forward(),
+      onTapUp: (_) {
+        _controller.forward();
+        _onTap();
+      },
       onTapCancel: () => _controller.forward(),
       child: ScaleTransition(
         scale: _controller,
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
+                color: Colors.black.withValues(alpha: 0.07),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // Circular thumbnail / emoji badge
               Container(
-                width: 56,
-                height: 56,
+                width: 88,
+                height: 88,
                 decoration: BoxDecoration(
                   color: widget.color,
                   shape: BoxShape.circle,
                 ),
-                child: Center(
-                  child: Text(widget.emoji,
-                      style: const TextStyle(fontSize: 26)),
+                child: widget.thumbnailUrl != null &&
+                        widget.thumbnailUrl!.isNotEmpty
+                    ? ClipOval(
+                        child: Image.network(
+                          widget.thumbnailUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, e, s) => Center(
+                            child: Text(widget.emoji,
+                                style: const TextStyle(fontSize: 38)),
+                          ),
+                        ),
+                      )
+                    : Center(
+                        child: Text(widget.emoji,
+                            style: const TextStyle(fontSize: 38)),
+                      ),
+              ),
+              const SizedBox(height: 12),
+              // Course title
+              Text(
+                widget.title,
+                style: AppTypography.kidsBodyMd.copyWith(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 12),
+              // Progress label row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Progress',
+                    style: AppTypography.kidsBodyMd.copyWith(
+                      fontSize: 13,
+                      color: Colors.black54,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    '$pctInt%',
+                    style: AppTypography.kidsBodyMd.copyWith(
+                      fontSize: 13,
+                      color: Colors.black54,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              // Progress bar
+              ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: LinearProgressIndicator(
+                  value: pct.clamp(0.0, 1.0),
+                  minHeight: 8,
+                  backgroundColor: const Color(0xFFE2E8F0),
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(widget.progressColor),
                 ),
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              if (pct >= 1.0) ...[
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    const Text('🏆', style: TextStyle(fontSize: 13)),
+                    const SizedBox(width: 4),
                     Text(
-                      widget.title,
+                      'Completed!',
                       style: AppTypography.kidsBodyMd.copyWith(
+                        fontSize: 12,
+                        color: const Color(0xFF16A34A),
                         fontWeight: FontWeight.w700,
-                        fontSize: 15,
-                        color: Colors.black87,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: LinearProgressIndicator(
-                              value: pct.clamp(0.0, 1.0),
-                              minHeight: 8,
-                              backgroundColor: const Color(0xFFE2E8F0),
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  widget.progressColor),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          '${widget.progress}/${widget.total}',
-                          style: AppTypography.kidsBodyMd.copyWith(
-                            fontSize: 12,
-                            color: Colors.black54,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (pct >= 1.0) ...[
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Text('🏆',
-                              style: TextStyle(fontSize: 12)),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Completed!',
-                            style: AppTypography.kidsBodyMd.copyWith(
-                              fontSize: 11,
-                              color: const Color(0xFF16A34A),
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
                   ],
                 ),
-              ),
-              const SizedBox(width: 8),
-              const Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: 16,
-                color: Colors.black26,
-              ),
+              ],
             ],
           ),
         ),
