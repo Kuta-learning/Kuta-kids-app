@@ -6,61 +6,25 @@ import '../models/course_model.dart';
 class HomeRepository {
   static const String _baseUrl = 'https://kuta-learning.onrender.com/api';
 
-  // Mock data shown while the API is unavailable
+  // Mock data shown while the API is unavailable — mirrors real API courses
   static final List<CourseModel> _mockCourses = [
     const CourseModel(
-      id: 'mock-1',
-      title: 'Arabic Letters',
-      description: 'Learn the Arabic alphabet step by step',
-      chapterCount: 4,
-      completedLessons: 3,
-      totalLessons: 12,
-      progressPercentage: 0.25,
-    ),
-    const CourseModel(
-      id: 'mock-2',
-      title: 'Numbers & Counting',
-      description: 'Fun with numbers from 1 to 100',
+      id: 'mock-art',
+      title: 'Art',
+      description: 'Explore creativity through drawing, colors, and art projects.',
       chapterCount: 3,
       completedLessons: 0,
       totalLessons: 10,
       progressPercentage: 0.0,
     ),
     const CourseModel(
-      id: 'mock-3',
-      title: 'Colors & Shapes',
-      description: 'Explore the world of colors and shapes',
-      chapterCount: 2,
-      completedLessons: 5,
-      totalLessons: 8,
-      progressPercentage: 0.625,
-    ),
-    const CourseModel(
-      id: 'mock-4',
-      title: 'Animals & Nature',
-      description: 'Discover amazing animals and nature',
-      chapterCount: 5,
-      completedLessons: 1,
-      totalLessons: 15,
-      progressPercentage: 0.067,
-    ),
-    const CourseModel(
-      id: 'mock-5',
-      title: 'Stories & Reading',
-      description: 'Short fun stories for early readers',
+      id: 'mock-math',
+      title: 'Mathematics',
+      description: 'Learn numbers, counting, addition, subtraction, shapes, measurement, time, and money through fun lessons, pictures, activities, and quizzes.',
       chapterCount: 3,
-      completedLessons: 0,
-      totalLessons: 9,
-      progressPercentage: 0.0,
-    ),
-    const CourseModel(
-      id: 'mock-6',
-      title: 'Music & Rhymes',
-      description: 'Songs, rhymes, and musical fun',
-      chapterCount: 2,
-      completedLessons: 2,
-      totalLessons: 6,
-      progressPercentage: 0.333,
+      completedLessons: 8,
+      totalLessons: 10,
+      progressPercentage: 0.8,
     ),
   ];
 

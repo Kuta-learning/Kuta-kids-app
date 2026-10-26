@@ -118,12 +118,21 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
               final i = entry.key;
               final course = entry.value;
               return AdventureCard(
+                courseId: course.id,
                 title: course.title,
                 emoji: _courseEmojis[i % _courseEmojis.length],
                 color: _courseColors[i % _courseColors.length],
                 progress: course.completedLessons,
                 total: course.totalLessons,
                 progressColor: _progressColors[i % _progressColors.length],
+                thumbnailUrl: course.thumbnailUrl,
+                onTap: () => context.push(
+                  '${RouteNames.kidsLearn}/course',
+                  extra: {
+                    'courseId': course.id,
+                    'courseTitle': course.title,
+                  },
+                ),
               );
             }),
           const SizedBox(height: 8),
