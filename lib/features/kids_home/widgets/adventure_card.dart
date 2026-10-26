@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_typography.dart';
+import '../../../core/router/route_names.dart';
 
 class AdventureCard extends StatefulWidget {
   final String courseId;
@@ -52,6 +54,16 @@ class _AdventureCardState extends State<AdventureCard>
     super.dispose();
   }
 
+  void _onTap() {
+    context.go(
+      '${RouteNames.kidsLearn}/course',
+      extra: {
+        'courseId': widget.courseId,
+        'courseTitle': widget.title,
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final pct = widget.total > 0 ? widget.progress / widget.total : 0.0;
@@ -60,7 +72,10 @@ class _AdventureCardState extends State<AdventureCard>
     return GestureDetector(
       onTap: widget.onTap,
       onTapDown: (_) => _controller.reverse(),
-      onTapUp: (_) => _controller.forward(),
+      onTapUp: (_) {
+        _controller.forward();
+        _onTap();
+      },
       onTapCancel: () => _controller.forward(),
       child: ScaleTransition(
         scale: _controller,
