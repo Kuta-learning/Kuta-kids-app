@@ -17,6 +17,7 @@ import '../../features/learning/screens/course_detail_screen.dart';
 import '../../features/learning/screens/learn_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
+import '../../features/progress/screens/progress_screen.dart';
 import 'route_names.dart';
 
 class AppRouter {
@@ -119,6 +120,11 @@ class AppRouter {
             path: RouteNames.kidsProfile,
             name: 'kidsProfile',
             builder: (context, state) => const ProfileScreen(),
+          ),
+          GoRoute(
+            path: RouteNames.progress,
+            name: 'progress',
+            builder: (context, state) => const ProgressScreen(),
           ),
         ],
       ),
