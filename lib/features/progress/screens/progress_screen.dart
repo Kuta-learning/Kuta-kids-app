@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
+import '../../../core/router/route_names.dart';
 
 class ProgressScreen extends StatelessWidget {
   const ProgressScreen({super.key});
@@ -142,7 +144,7 @@ class ProgressScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                   Center(
                     child: TextButton.icon(
-                      onPressed: () {},
+                      onPressed: () => context.push(RouteNames.parentPin),
                       icon: const Icon(
                         Icons.settings_outlined,
                         color: AppColors.textSecondary,
