@@ -9,6 +9,8 @@ import '../../features/authentication/screens/verify_otp_screen.dart';
 import '../../features/common/screens/splash_screen.dart';
 import '../../features/kids/games/screens/games_screen.dart';
 import '../../features/kids/practice/presentation/pages/practice_home_page.dart';
+import '../../features/kids/practice/presentation/pages/practice_question_page.dart';
+import '../../features/kids/practice/presentation/pages/speed_math_page.dart';
 import '../../features/kids_home/screens/kids_home_screen.dart';
 import '../../features/kids_home/screens/kids_shell_screen.dart';
 import '../../features/learning/screens/course_detail_screen.dart';
@@ -49,9 +51,8 @@ class AppRouter {
       GoRoute(
         path: RouteNames.verifyOtp,
         name: 'verifyOtp',
-        builder: (context, state) => VerifyOtpScreen(
-          email: state.extra as String? ?? '',
-        ),
+        builder: (context, state) =>
+            VerifyOtpScreen(email: state.extra as String? ?? ''),
       ),
       GoRoute(
         path: RouteNames.resetPassword,
@@ -96,6 +97,18 @@ class AppRouter {
             path: RouteNames.kidsPractice,
             name: 'kidsPractice',
             builder: (context, state) => const PracticeHomePage(),
+            routes: [
+              GoRoute(
+                path: 'question',
+                name: 'practiceQuestion',
+                builder: (context, state) => const PracticeQuestionPage(),
+              ),
+              GoRoute(
+                path: 'speed-math',
+                name: 'speedMath',
+                builder: (context, state) => const SpeedMathPage(),
+              ),
+            ],
           ),
           GoRoute(
             path: RouteNames.kidsGames,

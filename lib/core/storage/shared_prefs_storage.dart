@@ -6,7 +6,7 @@ import 'local_storage.dart';
 ///
 /// For sensitive data (tokens), replace or extend this with
 /// `flutter_secure_storage` when integrating a real auth backend.
-class SharedPrefsStorage implements LocalStorage {
+class SharedPrefsStorage extends LocalStorage {
   SharedPrefsStorage._();
 
   static SharedPrefsStorage? _instance;
@@ -22,26 +22,26 @@ class SharedPrefsStorage implements LocalStorage {
   }
 
   SharedPreferences get _p {
-    assert(_prefs != null, 'SharedPrefsStorage not initialized. Call getInstance() first.');
+    assert(
+      _prefs != null,
+      'SharedPrefsStorage not initialized. Call getInstance() first.',
+    );
     return _prefs!;
   }
 
   // ── String ──────────────────────────────────────────────────────────────
-  @override
   Future<void> setString(String key, String value) => _p.setString(key, value);
 
-  @override
   Future<String?> getString(String key) async => _p.getString(key);
 
   // ── Bool ─────────────────────────────────────────────────────────────────
-  Future<void> setBool(String key, {required bool value}) => _p.setBool(key, value);
+  Future<void> setBool(String key, {required bool value}) =>
+      _p.setBool(key, value);
 
   Future<bool?> getBool(String key) async => _p.getBool(key);
 
   // ── Remove / Clear ───────────────────────────────────────────────────────
-  @override
   Future<void> remove(String key) => _p.remove(key);
 
-  @override
   Future<void> clear() => _p.clear();
 }
