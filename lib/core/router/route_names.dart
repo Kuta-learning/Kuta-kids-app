@@ -14,6 +14,8 @@ class RouteNames {
   static const String kidsDashboard = '/kids/home';
   static const String kidsLearn = '/kids/learn';
   static const String kidsPractice = '/kids/practice';
+  static const String practiceQuestion = '/kids/practice/question';
+  static const String speedMath = '/kids/practice/speed-math';
   static const String kidsGames = '/kids/games';
   static const String kidsProfile = '/kids/profile';
   static const String categories = '/kids/learn';
