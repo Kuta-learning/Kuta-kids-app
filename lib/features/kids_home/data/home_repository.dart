@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../core/storage/storage_keys.dart';
 import '../models/course_model.dart';
 
 class HomeRepository {
@@ -46,7 +47,12 @@ class HomeRepository {
   Future<List<CourseModel>> getCourses() async {
     try {
       final dio = await _client();
-      final response = await dio.get('/courses');
+      final prefs = await SharedPreferences.getInstance();
+      final gradeLevel = prefs.getInt(StorageKeys.gradeLevel) ?? 1;
+      final response = await dio.get(
+        '/courses',
+        queryParameters: {'gradeLevel': gradeLevel},
+      );
       final data = response.data;
 
       List<CourseModel> courses = [];

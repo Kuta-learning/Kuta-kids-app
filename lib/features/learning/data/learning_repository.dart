@@ -34,6 +34,31 @@ class LearningRepository {
     }
   }
 
+  /// GET /progress/courses/:id — total/completed lessons + percentage.
+  /// Returns null when the API is unreachable so the UI keeps its mock path.
+  Future<CourseProgress?> getCourseProgress(String courseId) async {
+    try {
+      final dio = await _client();
+      final response = await dio.get('/progress/courses/$courseId');
+      return CourseProgress.fromJson(
+          response.data as Map<String, dynamic>);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// POST /progress/lessons/:id/complete — marks a lesson complete.
+  /// Returns true on a 2xx response, false on any error.
+  Future<bool> completeLesson(String lessonId) async {
+    try {
+      final dio = await _client();
+      await dio.post('/progress/lessons/$lessonId/complete');
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   CourseDetailModel _mockCourse(String courseId) {
     return CourseDetailModel(
       id: courseId,
