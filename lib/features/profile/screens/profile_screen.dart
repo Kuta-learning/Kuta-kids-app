@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
+import '../../../core/router/route_names.dart';
 import '../../authentication/bloc/auth_bloc.dart';
 import '../../authentication/bloc/auth_event.dart';
 
@@ -69,6 +71,23 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   _buildRecentBadges(),
                   const SizedBox(height: 20),
+                  SizedBox(
+                    height: 48,
+                    child: ElevatedButton.icon(
+                      onPressed: () => context.push(RouteNames.progress),
+                      icon: const Icon(Icons.insights_rounded),
+                      label: const Text('View Progress'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.orange500,
+                        foregroundColor: Colors.white,
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   SizedBox(
                     height: 48,
                     child: OutlinedButton.icon(
