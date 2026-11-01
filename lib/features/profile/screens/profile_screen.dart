@@ -7,9 +7,27 @@ import '../../../core/constants/app_typography.dart';
 import '../../../core/router/route_names.dart';
 import '../../authentication/bloc/auth_bloc.dart';
 import '../../authentication/bloc/auth_event.dart';
+import '../bloc/profile_bloc.dart';
+import '../bloc/profile_event.dart';
+import '../bloc/profile_state.dart';
+import '../data/profile_model.dart';
+import '../data/profile_repository.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          ProfileBloc(ProfileRepository())..add(const ProfileRequested()),
+      child: const _ProfileView(),
+    );
+  }
+}
+
+class _ProfileView extends StatelessWidget {
+  const _ProfileView();
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +51,8 @@ class ProfileScreen extends StatelessWidget {
                   const Spacer(),
                   IconButton(
                     onPressed: () => context.read<AuthBloc>().add(
-                      const AuthLogoutRequested(),
-                    ),
+                          const AuthLogoutRequested(),
+                        ),
                     tooltip: 'Log out',
                     icon: const Icon(
                       Icons.logout_rounded,
@@ -45,67 +63,81 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
-                physics: const BouncingScrollPhysics(),
-                children: [
-                  _buildProfileHeader(),
-                  const SizedBox(height: 20),
-                  _buildStatCard(
-                    icon: Icons.star_rounded,
-                    iconBackground: const Color(0xFFE0F2FE),
-                    iconColor: AppColors.info,
-                    title: 'Total Stars Collected',
-                    value: '1,250',
-                    valueColor: AppColors.info,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildStatCard(
-                    icon: Icons.military_tech_rounded,
-                    iconBackground: const Color(0xFFFFEDD5),
-                    iconColor: AppColors.orange500,
-                    title: 'Badges Won',
-                    value: '24',
-                    valueColor: AppColors.orange500,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildRecentBadges(),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    height: 48,
-                    child: ElevatedButton.icon(
-                      onPressed: () => context.push(RouteNames.progress),
-                      icon: const Icon(Icons.insights_rounded),
-                      label: const Text('View Progress'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.orange500,
-                        foregroundColor: Colors.white,
-                        elevation: 3,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+              child: BlocBuilder<ProfileBloc, ProfileState>(
+                builder: (context, state) {
+                  ProfileModel? profile;
+                  if (state is ProfileLoaded) {
+                    profile = state.profile;
+                  }
+
+                  return ListView(
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
+                    physics: const BouncingScrollPhysics(),
+                    children: [
+                      _buildProfileHeader(context, profile),
+                      const SizedBox(height: 20),
+                      _buildStatCard(
+                        icon: Icons.star_rounded,
+                        iconBackground: const Color(0xFFE0F2FE),
+                        iconColor: AppColors.info,
+                        title: 'Total Stars Collected',
+                        value: profile?.stars != null
+                            ? '${profile!.stars}'
+                            : '1,250',
+                        valueColor: AppColors.info,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildStatCard(
+                        icon: Icons.military_tech_rounded,
+                        iconBackground: const Color(0xFFFFEDD5),
+                        iconColor: AppColors.orange500,
+                        title: 'Badges Won',
+                        value: profile?.badges != null
+                            ? '${profile!.badges!.length}'
+                            : '24',
+                        valueColor: AppColors.orange500,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildRecentBadges(),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        height: 48,
+                        child: ElevatedButton.icon(
+                          onPressed: () => context.push(RouteNames.progress),
+                          icon: const Icon(Icons.insights_rounded),
+                          label: const Text('View Progress'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.orange500,
+                            foregroundColor: Colors.white,
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    height: 48,
-                    child: OutlinedButton.icon(
-                      onPressed: () => context.read<AuthBloc>().add(
-                        const AuthLogoutRequested(),
-                      ),
-                      icon: const Icon(Icons.logout_rounded),
-                      label: const Text('Log out'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.orange900,
-                        side: const BorderSide(color: AppColors.orange500),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        height: 48,
+                        child: OutlinedButton.icon(
+                          onPressed: () => context.read<AuthBloc>().add(
+                                const AuthLogoutRequested(),
+                              ),
+                          icon: const Icon(Icons.logout_rounded),
+                          label: const Text('Log out'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.orange900,
+                            side:
+                                const BorderSide(color: AppColors.orange500),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ],
+                    ],
+                  );
+                },
               ),
             ),
           ],
@@ -114,7 +146,11 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(BuildContext context, ProfileModel? profile) {
+    final name = profile?.name ?? 'Super Leo';
+    final gradeLabel = profile != null ? 'Grade ${profile.gradeLevel}' : 'Grade 1';
+    final avatarUrl = profile?.avatarUrl;
+
     return Column(
       children: [
         Stack(
@@ -133,46 +169,67 @@ class ProfileScreen extends StatelessWidget {
                   end: Alignment.bottomCenter,
                 ),
               ),
-              child: const Center(
-                child: Icon(
-                  Icons.pets_rounded,
-                  size: 60,
-                  color: AppColors.info,
-                ),
+              child: ClipOval(
+                child: avatarUrl != null
+                    ? Image.network(
+                        avatarUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context2, err, stack) => const Icon(
+                          Icons.pets_rounded,
+                          size: 60,
+                          color: AppColors.info,
+                        ),
+                      )
+                    : const Center(
+                        child: Icon(
+                          Icons.pets_rounded,
+                          size: 60,
+                          color: AppColors.info,
+                        ),
+                      ),
               ),
             ),
             Positioned(
               bottom: -12,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.orange500,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.orange500.withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
+              child: GestureDetector(
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Avatar customisation coming soon!'),
                     ),
-                  ],
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.edit_rounded, color: Colors.white, size: 14),
-                    SizedBox(width: 4),
-                    Text(
-                      'Change Avatar',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.orange500,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.orange500.withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.edit_rounded, color: Colors.white, size: 14),
+                      SizedBox(width: 4),
+                      Text(
+                        'Change Avatar',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -180,7 +237,7 @@ class ProfileScreen extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         Text(
-          'Super Leo',
+          name,
           textAlign: TextAlign.center,
           style: AppTypography.kidsHeadlineLg.copyWith(
             fontSize: 24,
@@ -195,14 +252,14 @@ class ProfileScreen extends StatelessWidget {
             color: const Color(0xFF93C5FD),
             borderRadius: BorderRadius.circular(16),
           ),
-          child: const Row(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.star_rounded, color: Colors.white, size: 14),
-              SizedBox(width: 4),
+              const Icon(Icons.star_rounded, color: Colors.white, size: 14),
+              const SizedBox(width: 4),
               Text(
-                'Level 5 Explorer',
-                style: TextStyle(
+                gradeLabel,
+                style: const TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -215,7 +272,7 @@ class ProfileScreen extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            "Keep exploring, Leo! You're only 50 stars away from your next big discovery!",
+            "Keep exploring, $name! You're doing great — every lesson brings you closer to mastery!",
             textAlign: TextAlign.center,
             style: AppTypography.kidsBodyMd.copyWith(
               fontSize: 12,
