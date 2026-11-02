@@ -1,12 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/router/route_names.dart';
+import '../bloc/progress_bloc.dart';
+import '../bloc/progress_event.dart';
+import '../bloc/progress_state.dart';
+import '../data/progress_repository.dart';
 
 class ProgressScreen extends StatelessWidget {
   const ProgressScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          ProgressBloc(ProgressRepository())..add(const ProgressRequested()),
+      child: const _ProgressView(),
+    );
+  }
+}
+
+class _ProgressView extends StatelessWidget {
+  const _ProgressView();
 
   @override
   Widget build(BuildContext context) {
@@ -30,143 +48,205 @@ class ProgressScreen extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                physics: const BouncingScrollPhysics(),
-                children: [
-                  Text(
-                    'Hey, Little\nExplorer!',
-                    style: AppTypography.kidsHeadlineLg.copyWith(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w800,
-                      height: 1.1,
-                      color: AppColors.orange900,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Your learning garden is blooming beautifully today!',
-                    style: AppTypography.kidsBodyMd.copyWith(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                      height: 1.4,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Growing Your Brain',
-                    style: AppTypography.kidsBodyMd.copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _ProgressCard(
-                    title: 'English Fun',
-                    subtitle: 'Chapter 4: Spelling Bees',
-                    progress: 0.65,
-                    progressText: '65%',
-                    icon: Icons.text_fields_rounded,
-                    iconBackground: const Color(0xFFEFF6FF),
-                    iconColor: const Color(0xFF3B82F6),
-                  ),
-                  const SizedBox(height: 12),
-                  _ProgressCard(
-                    title: 'Cool Math',
-                    subtitle: 'Topic: Big Numbers',
-                    progress: 0.82,
-                    progressText: '82%',
-                    icon: Icons.add_rounded,
-                    iconBackground: const Color(0xFFFFEDD5),
-                    iconColor: AppColors.orange500,
-                  ),
-                  const SizedBox(height: 12),
-                  _ProgressCard(
-                    title: 'Super Science',
-                    subtitle: 'Unit: Planet Earth',
-                    progress: 0.40,
-                    progressText: '40%',
-                    icon: Icons.rocket_launch_rounded,
-                    iconBackground: const Color(0xFFE0F2FE),
-                    iconColor: AppColors.info,
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: BlocBuilder<ProgressBloc, ProgressState>(
+                builder: (context, state) {
+                  List<CourseProgressEntry>? entries;
+                  if (state is ProgressLoaded) {
+                    entries = state.entries;
+                  }
+
+                  return ListView(
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                    physics: const BouncingScrollPhysics(),
                     children: [
                       Text(
-                        'Badges Earned',
+                        'Hey, Little\nExplorer!',
+                        style: AppTypography.kidsHeadlineLg.copyWith(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w800,
+                          height: 1.1,
+                          color: AppColors.orange900,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Your learning garden is blooming beautifully today!',
+                        style: AppTypography.kidsBodyMd.copyWith(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Growing Your Brain',
                         style: AppTypography.kidsBodyMd.copyWith(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
                           color: AppColors.textPrimary,
                         ),
                       ),
-                      Text(
-                        'See All Gallery',
-                        style: AppTypography.kidsBodyMd.copyWith(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.orange900,
+                      const SizedBox(height: 12),
+                      if (state is ProgressLoading)
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20),
+                            child: CircularProgressIndicator(
+                              color: AppColors.orange500,
+                            ),
+                          ),
+                        )
+                      else
+                        ...( entries ?? _fallbackEntries())
+                            .asMap()
+                            .entries
+                            .map((e) {
+                          final idx = e.key;
+                          final entry = e.value;
+                          final icon = _iconForIndex(idx);
+                          final iconBg = _iconBgForIndex(idx);
+                          final iconColor = _iconColorForIndex(idx);
+                          final pct = entry.progress.progressPercentage;
+                          // API may return 0–100 or 0.0–1.0 — normalise.
+                          final displayPct =
+                              pct > 1.0 ? pct : pct * 100;
+                          final progressValue =
+                              pct > 1.0 ? pct / 100 : pct;
+
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _ProgressCard(
+                              title: entry.course.title,
+                              subtitle:
+                                  '${entry.progress.completedLessons}/${entry.progress.totalLessons} lessons',
+                              progress: progressValue.clamp(0.0, 1.0),
+                              progressText:
+                                  '${displayPct.round()}%',
+                              icon: icon,
+                              iconBackground: iconBg,
+                              iconColor: iconColor,
+                            ),
+                          );
+                        }),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Badges Earned',
+                            style: AppTypography.kidsBodyMd.copyWith(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            'See All Gallery',
+                            style: AppTypography.kidsBodyMd.copyWith(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.orange900,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _BadgeCard(
+                              title: 'Word Wizard',
+                              subtitle: 'Spelled 50 words',
+                              gradientColors: const [
+                                Color(0xFFFFEE55),
+                                Color(0xFFFF8800),
+                              ],
+                              icon: Icons.auto_fix_high_rounded,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _BadgeCard(
+                              title: 'Math Genius',
+                              subtitle: 'No mistakes day!',
+                              gradientColors: const [
+                                Color(0xFF88AAFF),
+                                Color(0xFF4455CC),
+                              ],
+                              icon: Icons.grid_view_rounded,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Center(
+                        child: TextButton.icon(
+                          onPressed: () =>
+                              context.push(RouteNames.parentPin),
+                          icon: const Icon(
+                            Icons.settings_outlined,
+                            color: AppColors.textSecondary,
+                            size: 16,
+                          ),
+                          label: Text(
+                            'Parent Settings',
+                            style: AppTypography.kidsBodyMd.copyWith(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
                         ),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _BadgeCard(
-                          title: 'Word Wizard',
-                          subtitle: 'Spelled 50 words',
-                          gradientColors: const [
-                            Color(0xFFFFEE55),
-                            Color(0xFFFF8800),
-                          ],
-                          icon: Icons.auto_fix_high_rounded,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _BadgeCard(
-                          title: 'Math Genius',
-                          subtitle: 'No mistakes day!',
-                          gradientColors: const [
-                            Color(0xFF88AAFF),
-                            Color(0xFF4455CC),
-                          ],
-                          icon: Icons.grid_view_rounded,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Center(
-                    child: TextButton.icon(
-                      onPressed: () => context.push(RouteNames.parentPin),
-                      icon: const Icon(
-                        Icons.settings_outlined,
-                        color: AppColors.textSecondary,
-                        size: 16,
-                      ),
-                      label: Text(
-                        'Parent Settings',
-                        style: AppTypography.kidsBodyMd.copyWith(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                  );
+                },
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  List<CourseProgressEntry> _fallbackEntries() {
+    return ProgressRepository.mockEntries;
+  }
+
+  IconData _iconForIndex(int i) {
+    const icons = [
+      Icons.text_fields_rounded,
+      Icons.add_rounded,
+      Icons.rocket_launch_rounded,
+      Icons.palette_rounded,
+      Icons.biotech_rounded,
+      Icons.music_note_rounded,
+    ];
+    return icons[i % icons.length];
+  }
+
+  Color _iconBgForIndex(int i) {
+    const bgs = [
+      Color(0xFFEFF6FF),
+      Color(0xFFFFEDD5),
+      Color(0xFFE0F2FE),
+      Color(0xFFCFFAFE),
+      Color(0xFFF0FDF4),
+      Color(0xFFEEF2FF),
+    ];
+    return bgs[i % bgs.length];
+  }
+
+  Color _iconColorForIndex(int i) {
+    const colors = [
+      Color(0xFF3B82F6),
+      AppColors.orange500,
+      AppColors.info,
+      Color(0xFF06B6D4),
+      Color(0xFF16A34A),
+      Color(0xFF6366F1),
+    ];
+    return colors[i % colors.length];
   }
 }
 

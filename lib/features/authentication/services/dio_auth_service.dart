@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/constants/grade_level.dart';
+import '../../../core/storage/storage_keys.dart';
 import '../models/register_request.dart';
 import '../models/user_model.dart';
 import 'auth_service.dart';
@@ -40,7 +41,13 @@ class DioAuthService implements AuthService {
       final token = prefs.getString(_tokenKey);
       if (token == null) return null;
       final response = await _dio.get('/auth/me');
-      return _userFromResponse(response.data as Map<String, dynamic>);
+      final data = response.data as Map<String, dynamic>;
+      final user = _userFromResponse(data);
+      // Keep the stored grade level in sync with the server response.
+      final student = data['student'] as Map<String, dynamic>? ?? data;
+      await prefs.setInt(
+          StorageKeys.gradeLevel, (student['gradeLevel'] as int?) ?? 1);
+      return user;
     } catch (_) {
       return null;
     }
@@ -86,6 +93,7 @@ class DioAuthService implements AuthService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
     await prefs.remove(_refreshTokenKey);
+    await prefs.remove(StorageKeys.gradeLevel);
   }
 
   Future<void> forgotPassword(String email) async {
@@ -137,6 +145,10 @@ class DioAuthService implements AuthService {
       await prefs.setString(
           _refreshTokenKey, data['refreshToken'] as String);
     }
+    // Persist the student's numeric grade level for course filtering.
+    final student = data['student'] as Map<String, dynamic>? ?? data;
+    await prefs.setInt(
+        StorageKeys.gradeLevel, (student['gradeLevel'] as int?) ?? 1);
   }
 
   UserModel _userFromResponse(Map<String, dynamic> data) {

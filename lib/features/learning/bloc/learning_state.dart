@@ -14,7 +14,8 @@ class LearningLoading extends LearningState {
 
 class LearningLoaded extends LearningState {
   final CourseDetailModel course;
-  const LearningLoaded(this.course);
+  final CourseProgress? progress;
+  const LearningLoaded(this.course, [this.progress]);
 }
 
 class LearningError extends LearningState {

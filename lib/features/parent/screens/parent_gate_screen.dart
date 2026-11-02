@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
+import '../data/parent_repository.dart';
 
 class ParentGateScreen extends StatefulWidget {
   const ParentGateScreen({super.key});
@@ -12,15 +13,57 @@ class ParentGateScreen extends StatefulWidget {
 }
 
 class _ParentGateScreenState extends State<ParentGateScreen> {
-  static const _correctAnswer = '15';
+  final ParentRepository _repository = ParentRepository();
+  ParentGateQuestion? _question;
   String? _selectedAnswer;
+  bool _verifying = false;
 
-  void _selectAnswer(String answer) {
-    setState(() => _selectedAnswer = answer);
-    if (answer == _correctAnswer) {
+  @override
+  void initState() {
+    super.initState();
+    _loadQuestion();
+  }
+
+  Future<void> _loadQuestion() async {
+    final question = await _repository.getRandomQuestion();
+    if (!mounted) return;
+    setState(() {
+      _question = question;
+      _selectedAnswer = null;
+    });
+  }
+
+  Future<void> _selectAnswer(ParentGateOption option) async {
+    // Guard so a tap can't fire twice while a verify request is in flight.
+    if (_verifying || _question == null) return;
+    final question = _question!;
+
+    setState(() {
+      _verifying = true;
+      _selectedAnswer = option.id;
+    });
+
+    final correct = await _repository.verifyAnswer(
+      questionId: question.id,
+      selectedOptionId: option.id,
+    );
+
+    if (!mounted) return;
+
+    if (correct) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Parent verified!')));
+      context.pop(true);
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Not quite — try a new one')),
+    );
+    await _loadQuestion();
+    if (mounted) {
+      setState(() => _verifying = false);
     }
   }
 
@@ -112,6 +155,7 @@ class _ParentGateScreenState extends State<ParentGateScreen> {
   }
 
   Widget _buildGateCard() {
+    final question = _question;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -155,24 +199,32 @@ class _ParentGateScreenState extends State<ParentGateScreen> {
               color: const Color(0xFFFFEDD5),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Text(
-              '7 + 8 = ?',
-              textAlign: TextAlign.center,
-              style: AppTypography.kidsHeadlineLg.copyWith(
-                fontSize: 22,
-                color: AppColors.orange900,
-              ),
-            ),
+            child: question == null
+                ? const Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2.5),
+                    ),
+                  )
+                : Text(
+                    question.question.isEmpty ? 'Loading…' : question.question,
+                    textAlign: TextAlign.center,
+                    style: AppTypography.kidsHeadlineLg.copyWith(
+                      fontSize: 22,
+                      color: AppColors.orange900,
+                    ),
+                  ),
           ),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: ['12', '15', '18']
+            children: (question?.options ?? const <ParentGateOption>[])
                 .map(
-                  (answer) => _ParentOptionButton(
-                    number: answer,
-                    isSelected: _selectedAnswer == answer,
-                    onTap: () => _selectAnswer(answer),
+                  (option) => _ParentOptionButton(
+                    number: option.text,
+                    isSelected: _selectedAnswer == option.id,
+                    onTap: _verifying ? null : () => _selectAnswer(option),
                   ),
                 )
                 .toList(),
@@ -209,7 +261,7 @@ class _ParentOptionButton extends StatelessWidget {
 
   final String number;
   final bool isSelected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

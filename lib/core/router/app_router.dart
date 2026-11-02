@@ -8,6 +8,7 @@ import '../../features/authentication/screens/reset_password_screen.dart';
 import '../../features/authentication/screens/verify_otp_screen.dart';
 import '../../features/common/screens/splash_screen.dart';
 import '../../features/kids/games/screens/games_screen.dart';
+import '../../features/kids/practice/data/models.dart';
 import '../../features/kids/practice/presentation/pages/practice_home_page.dart';
 import '../../features/kids/practice/presentation/pages/practice_question_page.dart';
 import '../../features/kids/practice/presentation/pages/speed_math_page.dart';
@@ -108,7 +109,18 @@ class AppRouter {
               GoRoute(
                 path: 'question',
                 name: 'practiceQuestion',
-                builder: (context, state) => const PracticeQuestionPage(),
+                builder: (context, state) {
+                  final extra =
+                      state.extra as Map<String, dynamic>? ?? {};
+                  final attemptId =
+                      extra['attemptId'] as String? ?? '';
+                  final rawQuestions =
+                      extra['questions'] as List<PracticeQuestion>? ?? [];
+                  return PracticeQuestionPage(
+                    attemptId: attemptId,
+                    questions: rawQuestions,
+                  );
+                },
               ),
               GoRoute(
                 path: 'speed-math',

@@ -46,7 +46,7 @@ class _CourseDetailView extends StatelessWidget {
             return _buildError(context, state.message);
           }
           if (state is LearningLoaded) {
-            return _buildContent(context, state.course);
+            return _buildContent(context, state.course, state.progress);
           }
           return _buildLoadingShell(context);
         },
@@ -57,7 +57,7 @@ class _CourseDetailView extends StatelessWidget {
   Widget _buildLoadingShell(BuildContext context) {
     return Stack(
       children: [
-        _buildHeader(context, courseTitle, null),
+        _buildHeader(context, courseTitle, null, null),
         DraggableScrollableSheet(
           initialChildSize: 0.55,
           minChildSize: 0.55,
@@ -73,10 +73,11 @@ class _CourseDetailView extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, CourseDetailModel course) {
+  Widget _buildContent(BuildContext context, CourseDetailModel course,
+      CourseProgress? progress) {
     return Stack(
       children: [
-        _buildHeader(context, course.title, course),
+        _buildHeader(context, course.title, course, progress),
         DraggableScrollableSheet(
           initialChildSize: 0.55,
           minChildSize: 0.55,
@@ -101,7 +102,7 @@ class _CourseDetailView extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context, String title,
-      CourseDetailModel? course) {
+      CourseDetailModel? course, CourseProgress? progress) {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -179,7 +180,9 @@ class _CourseDetailView extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _HeaderPill(label: 'Grade 1'),
+                _HeaderPill(
+                    label:
+                        '${((progress?.progressPercentage ?? 0) * 100).round()}%'),
                 const SizedBox(width: 8),
                 _HeaderPill(
                     label:
@@ -552,11 +555,36 @@ class _TopicSection extends StatelessWidget {
   }
 }
 
-class _LessonTile extends StatelessWidget {
+class _LessonTile extends StatefulWidget {
   final LessonModel lesson;
   final int index;
 
   const _LessonTile({required this.lesson, required this.index});
+
+  @override
+  State<_LessonTile> createState() => _LessonTileState();
+}
+
+class _LessonTileState extends State<_LessonTile> {
+  /// Guards against firing a second completion request while one is in flight.
+  final ValueNotifier<bool> _completing = ValueNotifier<bool>(false);
+
+  @override
+  void dispose() {
+    _completing.dispose();
+    super.dispose();
+  }
+
+  void _completeLesson() {
+    // Completed tiles are non-interactive; never fire twice in a row.
+    if (widget.lesson.isCompleted || _completing.value) return;
+    _completing.value = true;
+    context.read<LearningBloc>().add(CourseLessonCompleted(widget.lesson.id));
+    // Re-enable after a short delay so the tile is usable again after refresh.
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) _completing.value = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -564,66 +592,86 @@ class _LessonTile extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Row(
-              children: [
-                Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: lesson.isCompleted
-                        ? const Color(0xFF16A34A)
-                        : const Color(0xFFF1F5F9),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: lesson.isCompleted
-                        ? const Icon(Icons.check_rounded,
-                            size: 16, color: Colors.white)
-                        : Text(
-                            '$index',
-                            style: AppTypography.kidsBodyMd.copyWith(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    lesson.title,
-                    style: AppTypography.kidsBodyMd.copyWith(
-                      fontSize: 14,
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                if (lesson.isCompleted)
+          GestureDetector(
+            onTap: widget.lesson.isCompleted ? null : _completeLesson,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 3),
+                    width: 28,
+                    height: 28,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF0FDF4),
-                      borderRadius: BorderRadius.circular(20),
+                      color: widget.lesson.isCompleted
+                          ? const Color(0xFF16A34A)
+                          : const Color(0xFFF1F5F9),
+                      shape: BoxShape.circle,
                     ),
+                    child: Center(
+                      child: widget.lesson.isCompleted
+                          ? const Icon(Icons.check_rounded,
+                              size: 16, color: Colors.white)
+                          : Text(
+                              '${widget.index}',
+                              style: AppTypography.kidsBodyMd.copyWith(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
                     child: Text(
-                      'COMPLETED',
-                      style: AppTypography.labelSm.copyWith(
-                        color: const Color(0xFF16A34A),
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.5,
+                      widget.lesson.title,
+                      style: AppTypography.kidsBodyMd.copyWith(
+                        fontSize: 14,
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-              ],
+                  ValueListenableBuilder<bool>(
+                    valueListenable: _completing,
+                    builder: (context, completing, _) {
+                      if (completing) {
+                        return const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.orange500,
+                          ),
+                        );
+                      }
+                      if (widget.lesson.isCompleted) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF0FDF4),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            'COMPLETED',
+                            style: AppTypography.labelSm.copyWith(
+                              color: const Color(0xFF16A34A),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
-          if (index < index + 1)
+          if (widget.index < widget.index + 1)
             const Divider(
                 height: 1, indent: 40, color: Color(0xFFF1F5F9)),
         ],

@@ -23,4 +23,8 @@ abstract class StorageKeys {
 
   /// Theme mode: "light", "dark", or "system".
   static const String themeMode = 'theme_mode';
+
+  // ── Student Profile ──────────────────────────────────────────────────────
+  /// Numeric grade level of the authenticated student (persisted as int).
+  static const String gradeLevel = 'grade_level';
 }

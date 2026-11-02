@@ -117,3 +117,28 @@ class CourseDetailModel {
     );
   }
 }
+
+/// Aggregated course progress returned by /progress/courses/:id.
+class CourseProgress {
+  final String? id;
+  final int totalLessons;
+  final int completedLessons;
+  final double progressPercentage;
+
+  const CourseProgress({
+    this.id,
+    required this.totalLessons,
+    required this.completedLessons,
+    required this.progressPercentage,
+  });
+
+  factory CourseProgress.fromJson(Map<String, dynamic> json) {
+    return CourseProgress(
+      id: json['_id']?.toString() ?? json['id']?.toString(),
+      totalLessons: (json['totalLessons'] as num?)?.toInt() ?? 0,
+      completedLessons: (json['completedLessons'] as num?)?.toInt() ?? 0,
+      progressPercentage:
+          (json['progressPercentage'] as num?)?.toDouble() ?? 0.0,
+    );
+  }
+}
