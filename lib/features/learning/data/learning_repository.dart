@@ -21,14 +21,27 @@ class LearningRepository {
   }
 
   Future<CourseDetailModel> getCourseDetail(String courseId) async {
+    // Only use mock data for placeholder IDs — real IDs go to the API
+    if (courseId.startsWith('mock-')) return _mockCourse(courseId);
     try {
       final dio = await _client();
       final response = await dio.get('/courses/$courseId');
-      final model = CourseDetailModel.fromJson(
-          response.data as Map<String, dynamic>);
-      // If API returns no chapters, use mock data
-      if (model.chapters.isEmpty) return _mockCourse(courseId);
-      return model;
+      // API may return the course directly or wrapped in a key
+      final raw = response.data;
+      final Map<String, dynamic> json;
+      if (raw is Map<String, dynamic>) {
+        // Unwrap common wrapper keys: { course: {...} } or { data: {...} }
+        if (raw.containsKey('course') && raw['course'] is Map) {
+          json = raw['course'] as Map<String, dynamic>;
+        } else if (raw.containsKey('data') && raw['data'] is Map) {
+          json = raw['data'] as Map<String, dynamic>;
+        } else {
+          json = raw;
+        }
+      } else {
+        return _mockCourse(courseId);
+      }
+      return CourseDetailModel.fromJson(json);
     } catch (_) {
       return _mockCourse(courseId);
     }
@@ -37,6 +50,7 @@ class LearningRepository {
   /// GET /progress/courses/:id — total/completed lessons + percentage.
   /// Returns null when the API is unreachable so the UI keeps its mock path.
   Future<CourseProgress?> getCourseProgress(String courseId) async {
+    if (courseId.startsWith('mock-')) return null;
     try {
       final dio = await _client();
       final response = await dio.get('/progress/courses/$courseId');

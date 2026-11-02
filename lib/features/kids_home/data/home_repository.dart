@@ -48,32 +48,47 @@ class HomeRepository {
     try {
       final dio = await _client();
       final prefs = await SharedPreferences.getInstance();
-      final gradeLevel = prefs.getInt(StorageKeys.gradeLevel) ?? 1;
-      final response = await dio.get(
-        '/courses',
-        queryParameters: {'gradeLevel': gradeLevel},
-      );
-      final data = response.data;
+      final gradeLevel = prefs.getInt(StorageKeys.gradeLevel);
 
-      List<CourseModel> courses = [];
+      // Build query — only add gradeLevel when we have a stored value
+      final Map<String, dynamic> query = {};
+      if (gradeLevel != null) query['gradeLevel'] = gradeLevel;
 
-      if (data is List) {
-        courses = data
-            .map((e) => CourseModel.fromJson(e as Map<String, dynamic>))
-            .toList();
-      } else if (data is Map) {
-        // Some APIs wrap the list in a key
-        final list = data['courses'] ?? data['data'] ?? [];
-        courses = (list as List)
-            .map((e) => CourseModel.fromJson(e as Map<String, dynamic>))
-            .toList();
-      }
+      final response = await dio.get('/courses', queryParameters: query);
+      final courses = _parseCourses(response.data);
 
-      // Fall back to mock data if API returns empty
+      // Fall back to mock only when the API truly returns nothing
       return courses.isNotEmpty ? courses : _mockCourses;
+    } on DioException catch (e) {
+      // If we got a 400/401 with gradeLevel, retry without it once
+      if (e.response?.statusCode == 400 || e.response?.statusCode == 401) {
+        try {
+          final dio = await _client();
+          final response = await dio.get('/courses');
+          final courses = _parseCourses(response.data);
+          return courses.isNotEmpty ? courses : _mockCourses;
+        } catch (_) {
+          return _mockCourses;
+        }
+      }
+      return _mockCourses;
     } catch (_) {
-      // API unreachable — use mock data
       return _mockCourses;
     }
+  }
+
+  List<CourseModel> _parseCourses(dynamic data) {
+    if (data is List) {
+      return data
+          .map((e) => CourseModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    if (data is Map) {
+      final list = data['courses'] ?? data['data'] ?? data['results'] ?? [];
+      return (list as List)
+          .map((e) => CourseModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    return [];
   }
 }
