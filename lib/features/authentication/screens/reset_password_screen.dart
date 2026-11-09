@@ -144,8 +144,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 label: 'New Password',
                                 hint: '••••••••',
                                 obscure: !_passwordVisible,
-                                onToggle: () => setState(
-                                    () => _passwordVisible = !_passwordVisible),
+                                onToggle: () => setState(() =>
+                                    _passwordVisible = !_passwordVisible),
                                 validator: (v) {
                                   if (v == null || v.length < 8) {
                                     return 'Minimum 8 characters';
@@ -159,8 +159,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 label: 'Confirm Password',
                                 hint: '••••••••',
                                 obscure: !_confirmVisible,
-                                onToggle: () => setState(
-                                    () => _confirmVisible = !_confirmVisible),
+                                onToggle: () => setState(() =>
+                                    _confirmVisible = !_confirmVisible),
                                 validator: (v) {
                                   if (v != _passwordController.text) {
                                     return 'Passwords do not match';
@@ -169,6 +169,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 },
                               ),
                               const SizedBox(height: 24),
+                              // Reset button
                               GestureDetector(
                                 onTap: _isLoading ? null : _onReset,
                                 child: AnimatedContainer(
@@ -234,6 +235,22 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   ],
                                 ),
                               ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildField({
     required TextEditingController controller,
     required String label,
     required String hint,
