@@ -212,22 +212,28 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildField({
+                              const SizedBox(height: 16),
+                              // Back to Login
+                              GestureDetector(
+                                onTap: () => context.go(RouteNames.login),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.arrow_back_rounded,
+                                        size: 16,
+                                        color: Color(0xFF2563EB)),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Back to Login',
+                                      style: AppTypography.kidsBodyMd.copyWith(
+                                        color: const Color(0xFF2563EB),
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
     required TextEditingController controller,
     required String label,
     required String hint,

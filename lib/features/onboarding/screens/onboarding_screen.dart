@@ -48,6 +48,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   ];
 
   bool get _isLast => _currentPage == _pages.length - 1;
+  bool get _isFirst => _currentPage == 0;
 
   void _next() {
     if (!_isLast) {
@@ -57,6 +58,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       );
     } else {
       context.go(RouteNames.register);
+    }
+  }
+
+  void _back() {
+    if (!_isFirst) {
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
     }
   }
 
@@ -73,7 +83,68 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // ── Swipeable image area ────────────────────────────────────
+            // ── Top row: Back + Skip ────────────────────────────────────
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  // Back button — hidden on first page
+                  if (!_isFirst)
+                    GestureDetector(
+                      onTap: _back,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.arrow_back_ios_rounded,
+                                size: 14, color: Colors.black54),
+                            const SizedBox(width: 2),
+                            Text(
+                              'Back',
+                              style: AppTypography.kidsBodyMd.copyWith(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black54,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  else
+                    const SizedBox(width: 60),
+                  const Spacer(),
+                  // Skip button — hidden on last page
+                  if (!_isLast)
+                    GestureDetector(
+                      onTap: () => context.go(RouteNames.register),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          'Skip',
+                          style: AppTypography.kidsBodyMd.copyWith(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
             Expanded(
               flex: 6,
               child: PageView.builder(
