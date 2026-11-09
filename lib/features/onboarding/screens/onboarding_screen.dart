@@ -196,7 +196,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Circular illustration for each page
+// Illustration for each page — no clipping, no border, full natural size
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _IllustrationPage extends StatelessWidget {
@@ -206,30 +206,13 @@ class _IllustrationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
-    final diameter = size.width * 0.72;
-
-    return Center(
-      child: SizedBox(
-        width: diameter,
-        height: diameter,
-        child: ClipOval(
-          child: Image.asset(
-            asset,
-            fit: BoxFit.cover,
-            errorBuilder: (context, e, s) => Container(
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [Color(0xFFFFD59E), Color(0xFFFFA040)],
-                ),
-              ),
-              child: const Center(
-                child: Icon(Icons.menu_book_rounded,
-                    size: 64, color: Colors.white),
-              ),
-            ),
-          ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Image.asset(
+        asset,
+        fit: BoxFit.contain,
+        errorBuilder: (context, e, s) => const Center(
+          child: Icon(Icons.menu_book_rounded, size: 80, color: Color(0xFFFFB060)),
         ),
       ),
     );
