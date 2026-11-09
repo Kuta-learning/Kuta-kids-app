@@ -56,8 +56,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       badgeIconColor: Color(0xFF1565C0),
     ),
     _Page(
-      title: 'Play and Discover',
-      body: 'Games, puzzles and activities that make every lesson feel like playtime!',
+      title: 'Learn Step-by-Step',
+      body: 'Master new subjects with clear video guides and easy lessons.',
       asset: 'assets/images/onboarding_2.png',
       cardColor: Color(0xFFFFF9C4),
       bgTop: Color(0xFFF8BBD0),
@@ -66,8 +66,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       badgeIconColor: Color(0xFFF57F17),
     ),
     _Page(
-      title: 'Earn Stars',
-      body: 'Complete lessons, collect badges and show your parents how brilliant you are!',
+      title: 'Track Your Progress',
+      body: 'Complete quick quizzes, review your answers, and improve every day!',
       asset: 'assets/images/onboarding_3.png',
       cardColor: Color(0xFFDCEDC8),
       bgTop: Color(0xFFE1BEE7),
