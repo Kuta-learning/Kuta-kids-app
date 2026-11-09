@@ -1,32 +1,19 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/router/route_names.dart';
-import '../widgets/onboarding_illustration_card.dart';
-import '../widgets/onboarding_page_indicator.dart';
 
 class _Page {
   final String title;
   final String body;
   final String asset;
-  final Color cardColor;
-  final Color bgTop;
-  final Color bgBottom;
-  final IconData badgeIcon;
-  final Color badgeIconColor;
 
   const _Page({
     required this.title,
     required this.body,
     required this.asset,
-    required this.cardColor,
-    required this.bgTop,
-    required this.bgBottom,
-    required this.badgeIcon,
-    required this.badgeIconColor,
   });
 }
 
@@ -37,68 +24,33 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen>
-    with SingleTickerProviderStateMixin {
+class _OnboardingScreenState extends State<OnboardingScreen> {
   final _pageController = PageController();
   int _currentPage = 0;
-  late AnimationController _btnController;
-  late Animation<double> _btnScale;
 
   static const _pages = [
     _Page(
-      title: 'Learn with Fun',
-      body: 'Letters, numbers, colors and shapes — made just for little learners like you!',
+      title: 'Learn\nWith Fun',
+      body:
+          'Letters, numbers, colors and shapes — made just for little learners like you!',
       asset: 'assets/images/onboarding_1.png',
-      cardColor: Color(0xFFDDE8F8),
-      bgTop: Color(0xFFFFE0B2),
-      bgBottom: Color(0xFFBBDEFB),
-      badgeIcon: Icons.abc_rounded,
-      badgeIconColor: Color(0xFF1565C0),
     ),
     _Page(
-      title: 'Learn Step-by-Step',
-      body: 'Master new subjects with clear video guides and easy lessons.',
+      title: 'Learn\nStep-by-Step',
+      body: 'Master new subjects with\nclear video guides and easy lessons.',
       asset: 'assets/images/onboarding_2.png',
-      cardColor: Color(0xFFFFF9C4),
-      bgTop: Color(0xFFF8BBD0),
-      bgBottom: Color(0xFFC8E6C9),
-      badgeIcon: Icons.extension_rounded,
-      badgeIconColor: Color(0xFFF57F17),
     ),
     _Page(
-      title: 'Track Your Progress',
+      title: 'Track\nYour Progress',
       body: 'Complete quick quizzes, review your answers, and improve every day!',
       asset: 'assets/images/onboarding_3.png',
-      cardColor: Color(0xFFDCEDC8),
-      bgTop: Color(0xFFE1BEE7),
-      bgBottom: Color(0xFFB2EBF2),
-      badgeIcon: Icons.emoji_events_rounded,
-      badgeIconColor: Color(0xFF2E7D32),
     ),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _btnController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    );
-    _btnScale = Tween<double>(begin: 1.0, end: 1.06).animate(
-      CurvedAnimation(parent: _btnController, curve: Curves.elasticOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    _btnController.dispose();
-    super.dispose();
-  }
+  bool get _isLast => _currentPage == _pages.length - 1;
 
   void _next() {
-    _btnController.forward(from: 0);
-    if (_currentPage < _pages.length - 1) {
+    if (!_isLast) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
@@ -108,264 +60,176 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     }
   }
 
-  void _back() {
-    if (_currentPage > 0) {
-      _pageController.previousPage(
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
-      );
-    }
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
-
-  bool get _isLast => _currentPage == _pages.length - 1;
-  bool get _isFirst => _currentPage == 0;
 
   @override
   Widget build(BuildContext context) {
-    final page = _pages[_currentPage];
-    final height = MediaQuery.sizeOf(context).height;
-
     return Scaffold(
-      body: AnimatedContainer(
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [page.bgTop, page.bgBottom],
-          ),
-        ),
-        child: SafeArea(
-          child: Stack(
-            children: [
-              Positioned(
-                top: -40,
-                right: -40,
-                child: _BlurCircle(color: page.bgTop, size: 200),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // ── Swipeable image area ────────────────────────────────────
+            Expanded(
+              flex: 6,
+              child: PageView.builder(
+                controller: _pageController,
+                onPageChanged: (i) => setState(() => _currentPage = i),
+                itemCount: _pages.length,
+                physics: const BouncingScrollPhysics(),
+                itemBuilder: (context, i) =>
+                    _IllustrationPage(asset: _pages[i].asset),
               ),
-              Positioned(
-                bottom: 80,
-                left: -60,
-                child: _BlurCircle(color: page.bgBottom, size: 220),
-              ),
-              Column(
-                children: [
-                  // Top row: Back (if not first) + Skip
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 8),
-                    child: Row(
-                      children: [
-                        if (!_isFirst)
-                          GestureDetector(
-                            onTap: _back,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 6),
-                              decoration: BoxDecoration(
-                                color:
-                                    Colors.white.withValues(alpha: 0.6),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(Icons.arrow_back_ios_rounded,
-                                      size: 14, color: Colors.black54),
-                                  const SizedBox(width: 2),
-                                  Text(
-                                    'Back',
-                                    style:
-                                        AppTypography.bodyMdMedium.copyWith(
-                                      color: Colors.black54,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                        else
-                          const SizedBox(width: 60),
-                        const Spacer(),
-                        if (!_isLast)
-                          GestureDetector(
-                            onTap: () => context.go(RouteNames.register),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 6),
-                              decoration: BoxDecoration(
-                                color:
-                                    Colors.white.withValues(alpha: 0.6),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                'Skip',
-                                style:
-                                    AppTypography.bodyMdMedium.copyWith(
-                                  color: Colors.black54,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
+            ),
 
-                  // Illustration PageView
-                  SizedBox(
-                    height: height * 0.42,
-                    child: PageView.builder(
-                      controller: _pageController,
-                      onPageChanged: (i) =>
-                          setState(() => _currentPage = i),
-                      itemCount: _pages.length,
-                      physics: const BouncingScrollPhysics(),
-                      itemBuilder: (context, i) {
-                        final p = _pages[i];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 24),
-                          child: OnboardingIllustrationCard(
-                            asset: p.asset,
-                            cardColor: p.cardColor,
-                            badgeIcon: p.badgeIcon,
-                            badgeIconColor: p.badgeIconColor,
+            // ── Text + dots + button ────────────────────────────────────
+            Expanded(
+              flex: 4,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(32, 0, 32, 24),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 16),
+                    // Title
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      child: Text(
+                        _pages[_currentPage].title,
+                        key: ValueKey('title$_currentPage'),
+                        style: AppTypography.kidsDisplayLg.copyWith(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF1A1A2E),
+                          height: 1.15,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // Subtitle
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      child: Text(
+                        _pages[_currentPage].body,
+                        key: ValueKey('body$_currentPage'),
+                        style: AppTypography.kidsBodyMd.copyWith(
+                          fontSize: 14,
+                          color: Colors.black45,
+                          height: 1.6,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+
+                    const Spacer(),
+
+                    // Dot indicators
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(_pages.length, (i) {
+                        final active = i == _currentPage;
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          margin:
+                              const EdgeInsets.symmetric(horizontal: 4),
+                          width: active ? 24 : 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: active
+                                ? AppColors.orange500
+                                : const Color(0xFFE2E8F0),
+                            borderRadius: BorderRadius.circular(4),
                           ),
                         );
-                      },
+                      }),
                     ),
-                  ),
 
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 24),
 
-                  // Title
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 28),
-                      child: Text(
-                        page.title,
-                        key: ValueKey('t$_currentPage'),
-                        style: AppTypography.kidsDisplayLg.copyWith(
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 28,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Body
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 32),
-                      child: Text(
-                        page.body,
-                        key: ValueKey('b$_currentPage'),
-                        style: AppTypography.kidsBodyMd.copyWith(
-                          color: Colors.black54,
-                          height: 1.55,
-                          fontSize: 16,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Page indicator
-                  OnboardingPageIndicator(
-                    count: _pages.length,
-                    currentIndex: _currentPage,
-                  ),
-
-                  const Spacer(),
-
-                  // Next / Get Started button
-                  Padding(
-                    padding:
-                        const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                    child: ScaleTransition(
-                      scale: _btnScale,
-                      child: GestureDetector(
-                        onTap: _next,
-                        child: Container(
-                          width: double.infinity,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: AppColors.orange500,
+                    // Next / Get Started button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: _next,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.orange500,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(32),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.orange500
-                                    .withValues(alpha: 0.45),
-                                blurRadius: 16,
-                                offset: const Offset(0, 6),
-                              ),
-                            ],
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                _isLast ? "Let's Go" : 'Next',
-                                style:
-                                    AppTypography.kidsHeadlineLg.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              const Icon(
-                                Icons.arrow_forward_rounded,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              _isLast ? 'Get Started' : 'Next',
+                              style: AppTypography.kidsBodyMd.copyWith(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700,
                                 color: Colors.white,
-                                size: 22,
                               ),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(Icons.arrow_forward_rounded,
+                                size: 20, color: Colors.white),
+                          ],
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _BlurCircle extends StatelessWidget {
-  final Color color;
-  final double size;
+// ─────────────────────────────────────────────────────────────────────────────
+// Circular illustration for each page
+// ─────────────────────────────────────────────────────────────────────────────
 
-  const _BlurCircle({required this.color, required this.size});
+class _IllustrationPage extends StatelessWidget {
+  final String asset;
+
+  const _IllustrationPage({required this.asset});
 
   @override
   Widget build(BuildContext context) {
-    return ImageFiltered(
-      imageFilter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color.withValues(alpha: 0.5),
+    final size = MediaQuery.sizeOf(context);
+    final diameter = size.width * 0.72;
+
+    return Center(
+      child: SizedBox(
+        width: diameter,
+        height: diameter,
+        child: ClipOval(
+          child: Image.asset(
+            asset,
+            fit: BoxFit.cover,
+            errorBuilder: (context, e, s) => Container(
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [Color(0xFFFFD59E), Color(0xFFFFA040)],
+                ),
+              ),
+              child: const Center(
+                child: Icon(Icons.menu_book_rounded,
+                    size: 64, color: Colors.white),
+              ),
+            ),
+          ),
         ),
       ),
     );
