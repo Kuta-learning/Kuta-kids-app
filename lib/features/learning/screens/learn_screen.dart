@@ -21,6 +21,26 @@ class LearnScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => HomeBloc(HomeRepository())..add(const HomeRequested()),
+      child: const _LearnBody(),
+    );
+  }
+}
+
+// Separate widget so it can access the HomeBloc provided above.
+class _LearnBody extends StatelessWidget {
+  const _LearnBody();
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      color: AppColors.orange500,
+      onRefresh: () async {
+        context.read<HomeBloc>().add(const HomeRequested());
+        await context
+            .read<HomeBloc>()
+            .stream
+            .firstWhere((s) => s is! HomeLoading);
+      },
       child: Scaffold(
         backgroundColor: const Color(0xFFF8FAFC),
         body: BlocBuilder<HomeBloc, HomeState>(
@@ -32,11 +52,11 @@ class LearnScreen extends StatelessWidget {
             }
             if (state is HomeError) {
               return _buildError(context, state.message,
-                  onRetry: () => context.read<HomeBloc>().add(const HomeRequested()));
+                  onRetry: () =>
+                      context.read<HomeBloc>().add(const HomeRequested()));
             }
             if (state is HomeLoaded) {
               if (state.courses.isEmpty) return _buildEmpty();
-              // Show the first course directly in the Learn tab
               final course = state.courses.first;
               return _CourseView(course: course);
             }

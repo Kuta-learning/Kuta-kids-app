@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kuta_learning_app/core/constants/app_colors.dart';
@@ -117,9 +118,23 @@ class _PracticeHomeView extends StatelessWidget {
                               iconBg: iconBg,
                               accentColor: iconColor,
                               isDone: false,
-                              onTap: () => context
-                                  .read<PracticeBloc>()
-                                  .add(PracticeTopicStarted(topic.id)),
+                              onTap: () {
+                                HapticFeedback.lightImpact();
+                                if (topic.id == 'mock-speed-math') {
+                                  context.push(RouteNames.speedMath);
+                                } else if (topic.id.startsWith('mock-')) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          '${topic.title} coming soon 🚀'),
+                                    ),
+                                  );
+                                } else {
+                                  context
+                                      .read<PracticeBloc>()
+                                      .add(PracticeTopicStarted(topic.id));
+                                }
+                              },
                             ),
                           );
                         }),

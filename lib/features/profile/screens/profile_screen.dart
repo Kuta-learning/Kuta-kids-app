@@ -83,7 +83,7 @@ class _ProfileView extends StatelessWidget {
                         title: 'Total Stars Collected',
                         value: profile?.stars != null
                             ? '${profile!.stars}'
-                            : '1,250',
+                            : '–',
                         valueColor: AppColors.info,
                       ),
                       const SizedBox(height: 16),
@@ -94,7 +94,7 @@ class _ProfileView extends StatelessWidget {
                         title: 'Badges Won',
                         value: profile?.badges != null
                             ? '${profile!.badges!.length}'
-                            : '24',
+                            : '–',
                         valueColor: AppColors.orange500,
                       ),
                       const SizedBox(height: 16),
@@ -147,8 +147,8 @@ class _ProfileView extends StatelessWidget {
   }
 
   Widget _buildProfileHeader(BuildContext context, ProfileModel? profile) {
-    final name = profile?.name ?? 'Super Leo';
-    final gradeLabel = profile != null ? 'Grade ${profile.gradeLevel}' : 'Grade 1';
+    final name = profile?.name ?? '';
+    final gradeLabel = profile != null ? 'Grade ${profile.gradeLevel}' : '';
     final avatarUrl = profile?.avatarUrl;
 
     return Column(
@@ -236,43 +236,63 @@ class _ProfileView extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 24),
-        Text(
-          name,
-          textAlign: TextAlign.center,
-          style: AppTypography.kidsHeadlineLg.copyWith(
-            fontSize: 24,
-            fontWeight: FontWeight.w800,
-            color: AppColors.orange900,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: BoxDecoration(
-            color: const Color(0xFF93C5FD),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.star_rounded, color: Colors.white, size: 14),
-              const SizedBox(width: 4),
-              Text(
-                gradeLabel,
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+        name.isEmpty
+            ? Container(
+                width: 120,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              )
+            : Text(
+                name,
+                textAlign: TextAlign.center,
+                style: AppTypography.kidsHeadlineLg.copyWith(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.orange900,
                 ),
               ),
-            ],
-          ),
-        ),
+        const SizedBox(height: 6),
+        gradeLabel.isEmpty
+            ? Container(
+                width: 80,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              )
+            : Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF93C5FD),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.star_rounded, color: Colors.white, size: 14),
+                    const SizedBox(width: 4),
+                    Text(
+                      gradeLabel,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
         const SizedBox(height: 12),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            "Keep exploring, $name! You're doing great — every lesson brings you closer to mastery!",
+            name.isEmpty
+                ? "Keep exploring! You're doing great!"
+                : "Keep exploring, $name! You're doing great — every lesson brings you closer to mastery!",
             textAlign: TextAlign.center,
             style: AppTypography.kidsBodyMd.copyWith(
               fontSize: 12,

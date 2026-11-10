@@ -1,10 +1,15 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../core/storage/storage_keys.dart';
 import '../models/chapter_model.dart';
 
 class LearningRepository {
   static const String _baseUrl = 'https://kuta-learning.onrender.com/api';
+  static const int _ttlMs = 300000; // 5 minutes
 
   Future<Dio> _client() async {
     final prefs = await SharedPreferences.getInstance();
@@ -23,14 +28,41 @@ class LearningRepository {
   Future<CourseDetailModel> getCourseDetail(String courseId) async {
     // Only use mock data for placeholder IDs — real IDs go to the API
     if (courseId.startsWith('mock-')) return _mockCourse(courseId);
+
+    final prefs = await SharedPreferences.getInstance();
+    final cacheKey = StorageKeys.cacheCourseDetail(courseId);
+    final tsKey = StorageKeys.cacheCourseDetailTs(courseId);
+    final cached = prefs.getString(cacheKey);
+    final ts = prefs.getInt(tsKey) ?? 0;
+    final now = DateTime.now().millisecondsSinceEpoch;
+
+    if (cached != null && (now - ts) < _ttlMs) {
+      // Return cached immediately and re-fetch in background.
+      try {
+        final detail = CourseDetailModel.fromJson(
+            jsonDecode(cached) as Map<String, dynamic>);
+        unawaited(_fetchAndCacheCourse(courseId, prefs, cacheKey, tsKey));
+        return detail;
+      } catch (_) {
+        // Fall through to network fetch on decode error.
+      }
+    }
+
+    return _fetchAndCacheCourse(courseId, prefs, cacheKey, tsKey);
+  }
+
+  Future<CourseDetailModel> _fetchAndCacheCourse(
+    String courseId,
+    SharedPreferences prefs,
+    String cacheKey,
+    String tsKey,
+  ) async {
     try {
       final dio = await _client();
       final response = await dio.get('/courses/$courseId');
-      // API may return the course directly or wrapped in a key
       final raw = response.data;
       final Map<String, dynamic> json;
       if (raw is Map<String, dynamic>) {
-        // Unwrap common wrapper keys: { course: {...} } or { data: {...} }
         if (raw.containsKey('course') && raw['course'] is Map) {
           json = raw['course'] as Map<String, dynamic>;
         } else if (raw.containsKey('data') && raw['data'] is Map) {
@@ -39,12 +71,29 @@ class LearningRepository {
           json = raw;
         }
       } else {
-        return _mockCourse(courseId);
+        return _cachedDetailOrMock(prefs, cacheKey, courseId);
       }
+
+      // Persist raw json for cache.
+      await prefs.setString(cacheKey, jsonEncode(json));
+      await prefs.setInt(tsKey, DateTime.now().millisecondsSinceEpoch);
+
       return CourseDetailModel.fromJson(json);
     } catch (_) {
-      return _mockCourse(courseId);
+      return _cachedDetailOrMock(prefs, cacheKey, courseId);
     }
+  }
+
+  CourseDetailModel _cachedDetailOrMock(
+      SharedPreferences prefs, String cacheKey, String courseId) {
+    final cached = prefs.getString(cacheKey);
+    if (cached != null) {
+      try {
+        return CourseDetailModel.fromJson(
+            jsonDecode(cached) as Map<String, dynamic>);
+      } catch (_) {}
+    }
+    return _mockCourse(courseId);
   }
 
   /// GET /progress/courses/:id — total/completed lessons + percentage.

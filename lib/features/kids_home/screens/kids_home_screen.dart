@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/router/route_names.dart';
-import '../../authentication/bloc/auth_bloc.dart';
-import '../../authentication/bloc/auth_event.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
@@ -105,8 +104,18 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
   }
 
   Widget _buildContent(BuildContext context, List<CourseModel> courses) {
-    return SingleChildScrollView(
+    return RefreshIndicator(
+      color: AppColors.orange500,
+      onRefresh: () async {
+        context.read<HomeBloc>().add(const HomeRequested());
+        await context
+            .read<HomeBloc>()
+            .stream
+            .firstWhere((s) => s is! HomeLoading);
+      },
+      child: SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: 16),
+      physics: const AlwaysScrollableScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -139,6 +148,7 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
           _buildSectionHeader('Recommended for You ⭐', 'View All →', RouteNames.kidsLearn),
           _buildRecommendedGrid(courses),
         ],
+      ),
       ),
     );
   }
@@ -259,8 +269,10 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
           ),
           const Spacer(),
           GestureDetector(
-            onTap: () =>
-                context.read<AuthBloc>().add(const AuthLogoutRequested()),
+            onTap: () {
+              HapticFeedback.lightImpact();
+              context.go(RouteNames.kidsProfile);
+            },
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
@@ -291,7 +303,10 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
           ),
           const Spacer(),
           GestureDetector(
-            onTap: () => context.go(route),
+            onTap: () {
+              HapticFeedback.lightImpact();
+              context.go(route);
+            },
             child: Text(
               action,
               style: AppTypography.kidsBodyMd.copyWith(

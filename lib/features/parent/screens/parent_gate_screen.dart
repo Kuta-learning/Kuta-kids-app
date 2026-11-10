@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
+import '../../../core/router/route_names.dart';
 import '../data/parent_repository.dart';
 
 class ParentGateScreen extends StatefulWidget {
@@ -51,10 +52,8 @@ class _ParentGateScreenState extends State<ParentGateScreen> {
     if (!mounted) return;
 
     if (correct) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Parent verified!')));
       context.pop(true);
+      if (mounted) context.push(RouteNames.parentSettings);
       return;
     }
 
