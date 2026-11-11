@@ -60,6 +60,7 @@ class GamesScreen extends StatelessWidget {
                   crossAxisCount: 2,
                   crossAxisSpacing: 14,
                   mainAxisSpacing: 14,
+                  childAspectRatio: 0.85,
                   children: const [
                     _GameCard(
                       title: 'Number Race',
@@ -133,41 +134,44 @@ class _GameCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 60,
-                height: 60,
+                width: 56,
+                height: 56,
                 decoration: BoxDecoration(
                   color: bgColor,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Center(
                   child: Text(emoji,
-                      style: const TextStyle(fontSize: 32)),
+                      style: const TextStyle(fontSize: 28)),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Text(
                 title,
                 textAlign: TextAlign.center,
                 style: AppTypography.kidsBodyMd.copyWith(
                   fontWeight: FontWeight.w800,
-                  fontSize: 14,
+                  fontSize: 13,
                   color: Colors.black87,
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                description,
-                textAlign: TextAlign.center,
-                style: AppTypography.kidsBodyMd.copyWith(
-                  fontSize: 10,
-                  color: AppColors.textSecondary,
-                  height: 1.3,
+              Flexible(
+                child: Text(
+                  description,
+                  textAlign: TextAlign.center,
+                  style: AppTypography.kidsBodyMd.copyWith(
+                    fontSize: 10,
+                    color: AppColors.textSecondary,
+                    height: 1.3,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 8),
               Container(
