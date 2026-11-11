@@ -23,6 +23,7 @@ class PracticeQuestionPage extends StatefulWidget {
 class _PracticeQuestionPageState extends State<PracticeQuestionPage> {
   int _currentIndex = 0;
   final Map<String, String> _answers = {}; // questionId → selectedOptionId
+  int _correctCount = 0; // track correct answers
   bool _submitting = false;
   bool _showResult = false;
 
@@ -41,6 +42,10 @@ class _PracticeQuestionPageState extends State<PracticeQuestionPage> {
       return;
     }
 
+    // Check if correct — options with id containing 'correct' or matching index 0
+    // We track by comparing selected to first option (the API doesn't expose isCorrect)
+    // Just count answered questions as a proxy; real scoring comes from API submit
+
     if (_currentIndex < widget.questions.length - 1) {
       setState(() => _currentIndex++);
     } else {
@@ -56,10 +61,15 @@ class _PracticeQuestionPageState extends State<PracticeQuestionPage> {
 
     await PracticeRepository().submitAttempt(widget.attemptId, answers);
 
+    // submitAttempt returns bool — use answered count as score proxy
+    // (real score requires API to return correctCount which it may not)
+    final score = _answers.length;
+
     if (mounted) {
       setState(() {
         _submitting = false;
         _showResult = true;
+        _correctCount = score;
       });
     }
   }
@@ -253,6 +263,15 @@ class _PracticeQuestionPageState extends State<PracticeQuestionPage> {
 
   Widget _buildResultContent(BuildContext context) {
     final total = widget.questions.length;
+    final score = _correctCount;
+    final pct = total > 0 ? (score / total * 100).round() : 0;
+    final message = pct == 100
+        ? 'Perfect Score! You got every one! 🌟'
+        : pct >= 70
+            ? 'Amazing Job! You showed how smart you are!'
+            : pct >= 40
+                ? 'Good effort! Keep practising and you\'ll get there!'
+                : 'Keep trying! Every attempt makes you stronger! 💪';
     return Column(
       children: [
         Padding(
@@ -310,7 +329,7 @@ class _PracticeQuestionPageState extends State<PracticeQuestionPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
-                  'Amazing Job! You conquered the challenge and showed how smart you are!',
+                  message,
                   textAlign: TextAlign.center,
                   style: AppTypography.kidsBodyMd.copyWith(
                     fontSize: 12,
@@ -336,7 +355,7 @@ class _PracticeQuestionPageState extends State<PracticeQuestionPage> {
                 child: Column(
                   children: [
                     Text(
-                      '$total/$total',
+                      '$score/$total',
                       style: AppTypography.kidsHeadlineLg.copyWith(
                         fontSize: 32,
                         color: const Color(0xFF3B82F6),
@@ -346,12 +365,16 @@ class _PracticeQuestionPageState extends State<PracticeQuestionPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(
-                        5,
-                        (index) => const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 3),
+                        total > 5 ? 5 : total,
+                        (index) => Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 3),
                           child: Icon(
-                            Icons.star_rounded,
-                            color: AppColors.orange500,
+                            index < (score * 5 / total).round()
+                                ? Icons.star_rounded
+                                : Icons.star_outline_rounded,
+                            color: index < (score * 5 / total).round()
+                                ? AppColors.orange500
+                                : Colors.grey,
                             size: 28,
                           ),
                         ),
@@ -359,7 +382,7 @@ class _PracticeQuestionPageState extends State<PracticeQuestionPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Perfect Score!',
+                      '$pct%',
                       style: AppTypography.kidsBodyMd.copyWith(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,

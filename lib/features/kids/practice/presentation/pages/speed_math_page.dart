@@ -122,7 +122,7 @@ class _SpeedMathPageState extends State<SpeedMathPage> {
         _showSuccess = true;
         _score++;
       });
-      await Future.delayed(const Duration(milliseconds: 800));
+      await Future.delayed(const Duration(milliseconds: 700));
       if (!mounted) return;
       if (_currentIndex + 1 >= _total) {
         setState(() => _sessionDone = true);
@@ -135,15 +135,27 @@ class _SpeedMathPageState extends State<SpeedMathPage> {
         });
       }
     } else {
+      // Wrong answer — show red briefly then auto-advance to next question
       setState(() => _selectedAnswer = value);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Almost! Try again 💪'),
-          duration: Duration(milliseconds: 800),
+          content: Text('Not quite! Moving on 💪'),
+          duration: Duration(milliseconds: 700),
+          backgroundColor: Color(0xFFEF4444),
         ),
       );
-      await Future.delayed(const Duration(milliseconds: 400));
-      if (mounted) setState(() => _selectedAnswer = null);
+      await Future.delayed(const Duration(milliseconds: 800));
+      if (!mounted) return;
+      if (_currentIndex + 1 >= _total) {
+        setState(() => _sessionDone = true);
+      } else {
+        setState(() {
+          _currentIndex++;
+          _selectedAnswer = null;
+          _showSuccess = false;
+          _options = _questions[_currentIndex].options;
+        });
+      }
     }
   }
 
