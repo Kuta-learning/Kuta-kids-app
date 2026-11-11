@@ -27,4 +27,21 @@ abstract class StorageKeys {
   // ── Student Profile ──────────────────────────────────────────────────────
   /// Numeric grade level of the authenticated student (persisted as int).
   static const String gradeLevel = 'grade_level';
+
+  // ── API Response Cache ────────────────────────────────────────────────────
+  /// Cached JSON string for the courses list (home screen).
+  static const String cacheCourses = 'cache_courses';
+  static const String cacheCoursesTs = 'cache_courses_ts';
+
+  /// Cached JSON string for a specific course detail (by id).
+  static String cacheCourseDetail(String id) => 'cache_course_$id';
+  static String cacheCourseDetailTs(String id) => 'cache_course_${id}_ts';
+
+  /// Cached JSON string for the student profile.
+  static const String cacheProfile = 'cache_profile';
+  static const String cacheProfileTs = 'cache_profile_ts';
+
+  /// Cached JSON string for the progress list.
+  static const String cacheProgress = 'cache_progress';
+  static const String cacheProgressTs = 'cache_progress_ts';
 }

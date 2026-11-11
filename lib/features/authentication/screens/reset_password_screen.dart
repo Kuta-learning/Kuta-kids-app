@@ -144,8 +144,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 label: 'New Password',
                                 hint: '••••••••',
                                 obscure: !_passwordVisible,
-                                onToggle: () => setState(
-                                    () => _passwordVisible = !_passwordVisible),
+                                onToggle: () => setState(() =>
+                                    _passwordVisible = !_passwordVisible),
                                 validator: (v) {
                                   if (v == null || v.length < 8) {
                                     return 'Minimum 8 characters';
@@ -159,8 +159,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 label: 'Confirm Password',
                                 hint: '••••••••',
                                 obscure: !_confirmVisible,
-                                onToggle: () => setState(
-                                    () => _confirmVisible = !_confirmVisible),
+                                onToggle: () => setState(() =>
+                                    _confirmVisible = !_confirmVisible),
                                 validator: (v) {
                                   if (v != _passwordController.text) {
                                     return 'Passwords do not match';
@@ -169,6 +169,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 },
                               ),
                               const SizedBox(height: 24),
+                              // Reset button
                               GestureDetector(
                                 onTap: _isLoading ? null : _onReset,
                                 child: AnimatedContainer(
@@ -210,6 +211,28 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                             ),
                                           ),
                                   ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              // Back to Login
+                              GestureDetector(
+                                onTap: () => context.go(RouteNames.login),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.arrow_back_rounded,
+                                        size: 16,
+                                        color: Color(0xFF2563EB)),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Back to Login',
+                                      style: AppTypography.kidsBodyMd.copyWith(
+                                        color: const Color(0xFF2563EB),
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],

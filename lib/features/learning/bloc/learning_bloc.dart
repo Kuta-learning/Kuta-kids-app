@@ -25,6 +25,8 @@ class LearningBloc extends Bloc<LearningEvent, LearningState> {
       final course = await _repository.getCourseDetail(event.courseId);
       final progress = await _repository.getCourseProgress(event.courseId);
       emit(LearningLoaded(course, progress));
+    } on Exception catch (e) {
+      emit(LearningError(e.toString()));
     } catch (e) {
       emit(LearningError(e.toString()));
     }

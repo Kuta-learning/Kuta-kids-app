@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
@@ -578,6 +579,7 @@ class _LessonTileState extends State<_LessonTile> {
   void _completeLesson() {
     // Completed tiles are non-interactive; never fire twice in a row.
     if (widget.lesson.isCompleted || _completing.value) return;
+    HapticFeedback.lightImpact();
     _completing.value = true;
     context.read<LearningBloc>().add(CourseLessonCompleted(widget.lesson.id));
     // Re-enable after a short delay so the tile is usable again after refresh.
@@ -588,7 +590,9 @@ class _LessonTileState extends State<_LessonTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Opacity(
+      opacity: widget.lesson.isCompleted ? 0.6 : 1.0,
+      child: Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
       child: Column(
         children: [
@@ -627,7 +631,9 @@ class _LessonTileState extends State<_LessonTile> {
                       widget.lesson.title,
                       style: AppTypography.kidsBodyMd.copyWith(
                         fontSize: 14,
-                        color: Colors.black87,
+                        color: widget.lesson.isCompleted
+                            ? Colors.grey.shade400
+                            : Colors.black87,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -675,6 +681,7 @@ class _LessonTileState extends State<_LessonTile> {
             const Divider(
                 height: 1, indent: 40, color: Color(0xFFF1F5F9)),
         ],
+      ),
       ),
     );
   }
