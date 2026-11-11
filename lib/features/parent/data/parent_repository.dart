@@ -124,7 +124,8 @@ class ParentRepository {
       );
       final data = response.data;
       if (data is Map) {
-        return data['correct'] == true;
+        // API returns { isCorrect: bool }
+        return data['isCorrect'] == true || data['correct'] == true;
       }
       return false;
     } catch (_) {

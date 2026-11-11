@@ -52,8 +52,7 @@ class _ParentGateScreenState extends State<ParentGateScreen> {
     if (!mounted) return;
 
     if (correct) {
-      context.pop(true);
-      if (mounted) context.push(RouteNames.parentSettings);
+      if (mounted) context.go(RouteNames.parentSettings);
       return;
     }
 
