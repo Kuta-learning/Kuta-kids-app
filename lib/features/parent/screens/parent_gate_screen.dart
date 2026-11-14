@@ -139,10 +139,13 @@ class _ParentGateScreenState extends State<ParentGateScreen> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                const Icon(
-                  Icons.settings,
-                  color: AppColors.textSecondary,
-                  size: 20,
+                GestureDetector(
+                  onTap: () => context.push(RouteNames.parentPin),
+                  child: const Icon(
+                    Icons.settings,
+                    color: AppColors.textSecondary,
+                    size: 20,
+                  ),
                 ),
               ],
             ),

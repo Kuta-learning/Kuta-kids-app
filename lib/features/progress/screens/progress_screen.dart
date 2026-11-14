@@ -151,12 +151,19 @@ class _ProgressView extends StatelessWidget {
                               color: AppColors.textPrimary,
                             ),
                           ),
-                          Text(
-                            'See All Gallery',
-                            style: AppTypography.kidsBodyMd.copyWith(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.orange900,
+                          GestureDetector(
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Badge gallery coming soon! 🏆')),
+                              );
+                            },
+                            child: Text(
+                              'See All Gallery',
+                              style: AppTypography.kidsBodyMd.copyWith(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.orange900,
+                              ),
                             ),
                           ),
                         ],

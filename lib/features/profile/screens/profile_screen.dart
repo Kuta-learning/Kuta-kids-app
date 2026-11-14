@@ -98,7 +98,7 @@ class _ProfileView extends StatelessWidget {
                         valueColor: AppColors.orange500,
                       ),
                       const SizedBox(height: 16),
-                      _buildRecentBadges(),
+                      _buildRecentBadges(context),
                       const SizedBox(height: 20),
                       SizedBox(
                         height: 48,
@@ -345,7 +345,7 @@ class _ProfileView extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentBadges() {
+  Widget _buildRecentBadges(BuildContext context) {
     final badges = [
       ('Fast Reader', Icons.menu_book_rounded, const Color(0xFFFFB020)),
       ('Math Whiz', Icons.calculate_rounded, const Color(0xFF3B82F6)),
@@ -370,12 +370,19 @@ class _ProfileView extends StatelessWidget {
                   color: AppColors.textPrimary,
                 ),
               ),
-              Text(
-                'View All',
-                style: AppTypography.kidsBodyMd.copyWith(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.orange900,
+              GestureDetector(
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Badge gallery coming soon! 🏆')),
+                  );
+                },
+                child: Text(
+                  'View All',
+                  style: AppTypography.kidsBodyMd.copyWith(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.orange900,
+                  ),
                 ),
               ),
             ],
