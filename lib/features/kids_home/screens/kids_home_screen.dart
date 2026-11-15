@@ -47,6 +47,16 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
     Color(0xFF9333EA),
     Color(0xFFF97316),
   ];
+  static const _courseGradients = [
+    [Color(0xFF60A5FA), Color(0xFF2563EB)],
+    [Color(0xFFFFB347), Color(0xFFFF8C00)],
+    [Color(0xFF4ADE80), Color(0xFF16A34A)],
+    [Color(0xFFF472B6), Color(0xFFEC4899)],
+    [Color(0xFFFACC15), Color(0xFFF59E0B)],
+    [Color(0xFF38BDF8), Color(0xFF0EA5E9)],
+    [Color(0xFFA78BFA), Color(0xFF7C3AED)],
+    [Color(0xFFFB923C), Color(0xFFF97316)],
+  ];
 
   @override
   void initState() {
@@ -71,7 +81,7 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
     return BlocProvider(
       create: (_) => HomeBloc(HomeRepository())..add(const HomeRequested()),
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: const Color(0xFFFFFBF5),
         body: SafeArea(
           child: Column(
             children: [
@@ -134,6 +144,7 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
                 progress: course.completedLessons,
                 total: course.totalLessons,
                 progressColor: _progressColors[i % _progressColors.length],
+                cardGradient: _courseGradients[i % _courseGradients.length],
                 thumbnailUrl: course.thumbnailUrl,
                 onTap: () => context.push(
                   '${RouteNames.kidsLearn}/course',
@@ -240,12 +251,16 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+      padding: const EdgeInsets.fromLTRB(22, 18, 22, 26),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFFFF8C00), Color(0xFFF97316)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(28),
+          bottomRight: Radius.circular(28),
         ),
       ),
       child: Row(
@@ -256,15 +271,15 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
               offset: Offset(0, _waveAnimation.value),
               child: child,
             ),
-            child: const Text('🌟', style: TextStyle(fontSize: 28)),
+            child: const Text('🌟', style: TextStyle(fontSize: 40)),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
           Text(
             'Kuta Learning',
             style: AppTypography.kidsHeadlineLg.copyWith(
               color: Colors.white,
-              fontWeight: FontWeight.w800,
-              fontSize: 20,
+              fontWeight: FontWeight.w900,
+              fontSize: 26,
             ),
           ),
           const Spacer(),
@@ -274,13 +289,13 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
               context.go(RouteNames.kidsProfile);
             },
             child: Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
+                color: Colors.white.withValues(alpha: 0.25),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: const Icon(Icons.person_rounded,
-                  color: Colors.white, size: 22),
+                  color: Colors.white, size: 26),
             ),
           ),
         ],
@@ -290,14 +305,14 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
 
   Widget _buildSectionHeader(String title, String action, String route) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+      padding: const EdgeInsets.fromLTRB(20, 22, 20, 12),
       child: Row(
         children: [
           Text(
             title,
             style: AppTypography.kidsHeadlineLg.copyWith(
-              fontWeight: FontWeight.w800,
-              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              fontSize: 20,
               color: Colors.black87,
             ),
           ),

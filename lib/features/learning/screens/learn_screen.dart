@@ -42,7 +42,7 @@ class _LearnBody extends StatelessWidget {
             .firstWhere((s) => s is! HomeLoading);
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: const Color(0xFFFFFBF5),
         body: BlocBuilder<HomeBloc, HomeState>(
           builder: (context, state) {
             if (state is HomeLoading) {
@@ -280,7 +280,7 @@ class _CourseDetailBody extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Blue gradient header card
+// Vibrant blue gradient header card
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _CourseHeaderCard extends StatelessWidget {
@@ -296,25 +296,32 @@ class _CourseHeaderCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+      padding: const EdgeInsets.fromLTRB(24, 28, 24, 8),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF7BB8F0), Color(0xFF5B9BD5)],
+          colors: [Color(0xFF60A5FA), Color(0xFF2563EB)],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF2563EB).withValues(alpha: 0.35),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          // "Kuta Learnig" label
+          // "Kuta Learning" label
           Text(
             'Kuta Learning',
             style: AppTypography.kidsBodyMd.copyWith(
-              color: Colors.white.withValues(alpha: 0.85),
-              fontSize: 12,
+              color: Colors.white.withValues(alpha: 0.9),
+              fontSize: 13,
               letterSpacing: 0.5,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 8),
@@ -324,8 +331,8 @@ class _CourseHeaderCard extends StatelessWidget {
             style: AppTypography.kidsHeadlineLg.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w900,
-              fontSize: 28,
-              height: 1.15,
+              fontSize: 32,
+              height: 1.1,
             ),
             textAlign: TextAlign.center,
           ),
@@ -335,7 +342,7 @@ class _CourseHeaderCard extends StatelessWidget {
             Text(
               course.description!,
               style: AppTypography.kidsBodyMd.copyWith(
-                color: Colors.white.withValues(alpha: 0.88),
+                color: Colors.white.withValues(alpha: 0.9),
                 fontSize: 13,
                 height: 1.5,
               ),
@@ -344,7 +351,7 @@ class _CourseHeaderCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ],
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           // Pills row
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -354,24 +361,24 @@ class _CourseHeaderCard extends StatelessWidget {
               _Pill(label: '$modules Modules'),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
           // Illustration area
           Container(
-            width: 160,
-            height: 110,
+            width: 180,
+            height: 130,
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.18),
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
               ),
             ),
             child: course.thumbnailUrl != null &&
                     course.thumbnailUrl!.isNotEmpty
                 ? ClipRRect(
                     borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(16),
-                      topRight: Radius.circular(16),
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
                     ),
                     child: Image.network(
                       course.thumbnailUrl!,
@@ -394,7 +401,7 @@ class _FallbackIllustration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Icon(Icons.menu_book_rounded, size: 56, color: Colors.white),
+      child: Icon(Icons.menu_book_rounded, size: 64, color: Colors.white),
     );
   }
 }
@@ -407,17 +414,17 @@ class _Pill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.25),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
       ),
       child: Text(
         label,
         style: AppTypography.kidsBodyMd.copyWith(
           color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
+          fontSize: 13,
+          fontWeight: FontWeight.w800,
         ),
       ),
     );
@@ -425,7 +432,7 @@ class _Pill extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Topic card — matches the screenshot design
+// Topic card — colorful gradient background per topic
 // ─────────────────────────────────────────────────────────────────────────────
 
 enum _TopicStatus { completed, inProgress, locked }
@@ -448,25 +455,25 @@ class _TopicCard extends StatelessWidget {
   ];
 
   static const _iconColors = [
-    Color(0xFF16A34A),   // green
-    Color(0xFFF97316),   // orange
-    Color(0xFF8B5CF6),   // purple
-    Color(0xFF6B7280),   // gray
-    Color(0xFF3B82F6),   // blue
-    Color(0xFF0EA5E9),   // sky
-    Color(0xFFEC4899),   // pink
-    Color(0xFF14B8A6),   // teal
+    Color(0xFF16A34A), // green
+    Color(0xFFF97316), // orange
+    Color(0xFF8B5CF6), // purple
+    Color(0xFF6B7280), // gray
+    Color(0xFF3B82F6), // blue
+    Color(0xFF0EA5E9), // sky
+    Color(0xFFEC4899), // pink
+    Color(0xFF14B8A6), // teal
   ];
 
-  static const _iconBgs = [
-    Color(0xFFDCFCE7),
-    Color(0xFFFFEDD5),
-    Color(0xFFF3E8FF),
-    Color(0xFFF1F5F9),
-    Color(0xFFEFF6FF),
-    Color(0xFFE0F2FE),
-    Color(0xFFFCE7F3),
-    Color(0xFFCCFBF1),
+  static const _cardGradients = [
+    [Color(0xFF60A5FA), Color(0xFF2563EB)],
+    [Color(0xFFFFB347), Color(0xFFFF8C00)],
+    [Color(0xFF4ADE80), Color(0xFF16A34A)],
+    [Color(0xFFF472B6), Color(0xFFEC4899)],
+    [Color(0xFFFACC15), Color(0xFFF59E0B)],
+    [Color(0xFF38BDF8), Color(0xFF0EA5E9)],
+    [Color(0xFFA78BFA), Color(0xFF7C3AED)],
+    [Color(0xFF2DD4BF), Color(0xFF0D9488)],
   ];
 
   const _TopicCard({
@@ -479,77 +486,65 @@ class _TopicCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLocked = status == _TopicStatus.locked;
-    final isCompleted = status == _TopicStatus.completed;
-    final isInProgress = status == _TopicStatus.inProgress;
-
-    final iconColor = isLocked
-        ? const Color(0xFFCBD5E1)
-        : _iconColors[index % _iconColors.length];
-    final iconBg = isLocked
-        ? const Color(0xFFF1F5F9)
-        : _iconBgs[index % _iconBgs.length];
-
-    // Border color based on status
-    final Color? borderColor = isInProgress
-        ? AppColors.orange500
-        : isCompleted
-            ? const Color(0xFF16A34A)
-            : null;
-
-    // Bottom progress bar color
-    final Color barColor = isInProgress
-        ? AppColors.orange500
-        : isCompleted
-            ? const Color(0xFF16A34A)
-            : Colors.transparent;
-
     final lessons = topic.lessons;
     final completed = lessons.where((l) => l.isCompleted).length;
     final total = lessons.length;
     final pct = total > 0 ? completed / total : 0.0;
+    final gradient = _cardGradients[index % _cardGradients.length];
 
     return Column(
       children: [
         Container(
-          margin: const EdgeInsets.only(bottom: 4),
+          margin: const EdgeInsets.only(bottom: 6),
           decoration: BoxDecoration(
-            color: isLocked
-                ? const Color(0xFFF8FAFC)
-                : Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: borderColor != null
-                ? Border.all(color: borderColor, width: 2)
-                : Border.all(color: const Color(0xFFE2E8F0), width: 1),
+            gradient: isLocked
+                ? null
+                : LinearGradient(
+                    colors: gradient,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+            color: isLocked ? const Color(0xFFF1F5F9) : null,
+            borderRadius: BorderRadius.circular(28),
+            border: isLocked
+                ? Border.all(color: const Color(0xFFE2E8F0), width: 1)
+                : null,
             boxShadow: isLocked
                 ? null
                 : [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+                      color: gradient.last.withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
                     ),
                   ],
           ),
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
                 child: Row(
                   children: [
                     // Icon badge
                     Container(
-                      width: 50,
-                      height: 50,
+                      width: 56,
+                      height: 56,
                       decoration: BoxDecoration(
-                        color: iconBg,
+                        color: isLocked
+                            ? const Color(0xFFE2E8F0)
+                            : Colors.white,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
                         child: isLocked
                             ? const Icon(Icons.lock_rounded,
-                                size: 22, color: Color(0xFFCBD5E1))
-                            : Icon(_icons[index % _icons.length],
-                                size: 26, color: iconColor),
+                                size: 26, color: Color(0xFF94A3B8))
+                            : Icon(
+                                _icons[index % _icons.length],
+                                size: 30,
+                                color:
+                                    _iconColors[index % _iconColors.length],
+                              ),
                       ),
                     ),
                     const SizedBox(width: 14),
@@ -561,11 +556,11 @@ class _TopicCard extends StatelessWidget {
                           Text(
                             topic.title,
                             style: AppTypography.kidsBodyMd.copyWith(
-                              fontSize: 15,
+                              fontSize: 16,
                               fontWeight: FontWeight.w800,
                               color: isLocked
                                   ? AppColors.textSecondary
-                                  : Colors.black87,
+                                  : Colors.white,
                             ),
                           ),
                           if (total > 0) ...[
@@ -574,7 +569,9 @@ class _TopicCard extends StatelessWidget {
                               '$total lessons',
                               style: AppTypography.kidsBodyMd.copyWith(
                                 fontSize: 12,
-                                color: AppColors.textSecondary,
+                                color: isLocked
+                                    ? AppColors.textSecondary
+                                    : Colors.white.withValues(alpha: 0.85),
                               ),
                             ),
                           ],
@@ -591,14 +588,15 @@ class _TopicCard extends StatelessWidget {
               if (!isLocked && total > 0)
                 ClipRRect(
                   borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(14),
-                    bottomRight: Radius.circular(14),
+                    bottomLeft: Radius.circular(28),
+                    bottomRight: Radius.circular(28),
                   ),
                   child: LinearProgressIndicator(
                     value: pct.clamp(0.0, 1.0),
-                    minHeight: 5,
-                    backgroundColor: const Color(0xFFE2E8F0),
-                    valueColor: AlwaysStoppedAnimation<Color>(barColor),
+                    minHeight: 8,
+                    backgroundColor: Colors.white.withValues(alpha: 0.3),
+                    valueColor:
+                        const AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 ),
             ],
@@ -610,11 +608,11 @@ class _TopicCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 2),
             child: Center(
               child: Container(
-                width: 6,
-                height: 6,
+                width: 8,
+                height: 8,
                 decoration: BoxDecoration(
                   color: const Color(0xFFCBD5E1),
-                  borderRadius: BorderRadius.circular(3),
+                  borderRadius: BorderRadius.circular(4),
                 ),
               ),
             ),
@@ -633,53 +631,123 @@ class _StatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (status) {
       case _TopicStatus.completed:
-        return Column(
-          children: [
-            const Icon(Icons.emoji_events_rounded,
-                color: Color(0xFFEAB308), size: 22),
-            const SizedBox(height: 2),
-            Text(
-              'Completed',
-              style: AppTypography.labelSm.copyWith(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF16A34A),
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF16A34A),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF16A34A).withValues(alpha: 0.35),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
               ),
-            ),
-          ],
+            ],
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.emoji_events_rounded,
+                  color: Colors.white, size: 22),
+              SizedBox(width: 4),
+              Text('Done',
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white)),
+            ],
+          ),
         );
       case _TopicStatus.inProgress:
-        return Column(
-          children: [
-            const Icon(Icons.star_rounded,
-                color: Color(0xFFEAB308), size: 22),
-            const SizedBox(height: 2),
-            Text(
-              'In Progress',
-              style: AppTypography.labelSm.copyWith(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                color: AppColors.orange500,
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: AppColors.orange500,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.orange500.withValues(alpha: 0.4),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
               ),
-            ),
-          ],
+            ],
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _PulsingStar(color: Colors.white),
+              SizedBox(width: 4),
+              Text('Go!',
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white)),
+            ],
+          ),
         );
       case _TopicStatus.locked:
-        return Column(
-          children: [
-            const Icon(Icons.lock_rounded,
-                color: Color(0xFFCBD5E1), size: 22),
-            const SizedBox(height: 2),
-            Text(
-              'Locked',
-              style: AppTypography.labelSm.copyWith(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ],
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: const Color(0xFFE2E8F0),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.lock_rounded, color: Color(0xFF94A3B8), size: 20),
+              SizedBox(width: 4),
+              Text('Locked',
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF64748B))),
+            ],
+          ),
         );
     }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// A gently pulsing star used for the "in progress" badge.
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _PulsingStar extends StatefulWidget {
+  final Color color;
+
+  const _PulsingStar({required this.color});
+
+  @override
+  State<_PulsingStar> createState() => _PulsingStarState();
+}
+
+class _PulsingStarState extends State<_PulsingStar>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: Tween<double>(begin: 0.8, end: 1.2).animate(
+        CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+      ),
+      child: Icon(Icons.star_rounded, color: widget.color, size: 22),
+    );
   }
 }

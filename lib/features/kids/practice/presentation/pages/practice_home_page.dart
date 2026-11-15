@@ -40,6 +40,14 @@ class PracticeHomePage extends StatelessWidget {
     Color(0xFFCFFAFE),
     Color(0xFFEEF2FF),
   ];
+  static const _challengeGradients = [
+    [Color(0xFF60A5FA), Color(0xFF2563EB)],
+    [Color(0xFFFFB347), Color(0xFFFF8C00)],
+    [Color(0xFF4ADE80), Color(0xFF16A34A)],
+    [Color(0xFFF472B6), Color(0xFFEC4899)],
+    [Color(0xFFFACC15), Color(0xFFF59E0B)],
+    [Color(0xFF38BDF8), Color(0xFF0EA5E9)],
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +78,7 @@ class _PracticeHomeView extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: const Color(0xFFFFFBF5),
         body: SafeArea(
           child: Column(
             children: [
@@ -117,6 +125,8 @@ class _PracticeHomeView extends StatelessWidget {
                               iconColor: iconColor,
                               iconBg: iconBg,
                               accentColor: iconColor,
+                              gradient: PracticeHomePage._challengeGradients[
+                                  i % PracticeHomePage._challengeGradients.length],
                               isDone: false,
                               onTap: () {
                                 HapticFeedback.lightImpact();
@@ -153,37 +163,41 @@ class _PracticeHomeView extends StatelessWidget {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+      padding: const EdgeInsets.fromLTRB(22, 18, 22, 26),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFFFF8C00), Color(0xFFF97316)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(28),
+          bottomRight: Radius.circular(28),
+        ),
       ),
       child: Row(
         children: [
-          const Text('🌟', style: TextStyle(fontSize: 28)),
-          const SizedBox(width: 10),
+          const Text('🌟', style: TextStyle(fontSize: 40)),
+          const SizedBox(width: 12),
           Text(
             'Kuta Learning',
             style: AppTypography.kidsHeadlineLg.copyWith(
               color: Colors.white,
-              fontWeight: FontWeight.w800,
-              fontSize: 20,
+              fontWeight: FontWeight.w900,
+              fontSize: 26,
             ),
           ),
           const Spacer(),
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
+              color: Colors.white.withValues(alpha: 0.25),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: const Icon(
               Icons.person_rounded,
               color: Colors.white,
-              size: 22,
+              size: 26,
             ),
           ),
         ],
@@ -195,49 +209,51 @@ class _PracticeHomeView extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFFE2ECF8), Color(0xFFC3D8F5)],
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFFD166), Color(0xFFFF8C00)],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
-        borderRadius: BorderRadius.all(Radius.circular(24)),
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFF8C00).withValues(alpha: 0.35),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
-      child: const Column(
+      child: Column(
         children: [
-          SizedBox(
-            height: 150,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Color(0xFFFF6600),
-                borderRadius: BorderRadius.all(Radius.circular(36)),
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.rocket_launch_rounded,
-                  color: Colors.white,
-                  size: 88,
-                ),
-              ),
+          Container(
+            width: 110,
+            height: 110,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.25),
+              shape: BoxShape.circle,
+            ),
+            child: const Center(
+              child: Text('🚀', style: TextStyle(fontSize: 60)),
             ),
           ),
-          SizedBox(height: 20),
-          Text(
+          const SizedBox(height: 18),
+          const Text(
             'Pick a Challenge',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1E293B),
+              fontSize: 28,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             'What do you want to master today? Every challenge earns you stars!',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 13,
-              color: Color(0xFF475569),
+              color: Colors.white.withValues(alpha: 0.9),
               height: 1.4,
             ),
           ),
@@ -299,6 +315,7 @@ class ChallengeCard extends StatelessWidget {
     required this.iconColor,
     required this.iconBg,
     required this.accentColor,
+    required this.gradient,
     required this.isDone,
     this.onTap,
   });
@@ -311,6 +328,7 @@ class ChallengeCard extends StatelessWidget {
   final Color iconColor;
   final Color iconBg;
   final Color accentColor;
+  final List<Color> gradient;
   final bool isDone;
   final VoidCallback? onTap;
 
@@ -320,20 +338,25 @@ class ChallengeCard extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Material(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(28),
           child: InkWell(
             onTap: onTap,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(28),
             child: Container(
-              padding: const EdgeInsets.all(18),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                gradient: LinearGradient(
+                  colors: gradient,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(28),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+                    color: gradient.last.withValues(alpha: 0.3),
+                    blurRadius: 14,
+                    offset: const Offset(0, 6),
                   ),
                 ],
               ),
@@ -341,15 +364,15 @@ class ChallengeCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    width: 82,
-                    height: 82,
+                    width: 88,
+                    height: 88,
                     decoration: BoxDecoration(
-                      color: iconBg,
-                      borderRadius: BorderRadius.circular(22),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
                     ),
-                    child: Icon(icon, color: iconColor, size: 48),
+                    child: Icon(icon, color: iconColor, size: 50),
                   ),
-                  const SizedBox(width: 14),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -360,27 +383,27 @@ class ChallengeCard extends StatelessWidget {
                               child: Text(
                                 title,
                                 style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1E293B),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
                                 ),
                               ),
                             ),
                             if (isDone)
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
+                                  horizontal: 10,
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
                                   color: AppColors.orange900,
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: const Text(
                                   'DONE!',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 9,
+                                    fontSize: 10,
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 0.4,
                                   ),
@@ -391,9 +414,9 @@ class ChallengeCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           description,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Color(0xFF64748B),
+                            color: Colors.white.withValues(alpha: 0.9),
                             height: 1.3,
                           ),
                         ),
@@ -403,27 +426,28 @@ class ChallengeCard extends StatelessWidget {
                             const Icon(
                               Icons.star_rounded,
                               color: Color(0xFFFBBF24),
-                              size: 16,
+                              size: 18,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               stars,
                               style: const TextStyle(
                                 fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF475569),
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
                               ),
                             ),
                             const SizedBox(width: 20),
                             Expanded(
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(4),
+                                borderRadius: BorderRadius.circular(6),
                                 child: LinearProgressIndicator(
                                   value: progress,
-                                  backgroundColor: const Color(0xFFE2E8F0),
+                                  backgroundColor:
+                                      Colors.white.withValues(alpha: 0.4),
                                   valueColor:
                                       AlwaysStoppedAnimation<Color>(accentColor),
-                                  minHeight: 6,
+                                  minHeight: 8,
                                 ),
                               ),
                             ),

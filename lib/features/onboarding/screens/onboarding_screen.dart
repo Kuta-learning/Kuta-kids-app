@@ -79,187 +79,207 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // ── Top row: Back + Skip ────────────────────────────────────
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                children: [
-                  // Back button — hidden on first page
-                  if (!_isFirst)
-                    GestureDetector(
-                      onTap: _back,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF1F5F9),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.arrow_back_ios_rounded,
-                                size: 14, color: Colors.black54),
-                            const SizedBox(width: 2),
-                            Text(
-                              'Back',
-                              style: AppTypography.kidsBodyMd.copyWith(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  else
-                    const SizedBox(width: 60),
-                  const Spacer(),
-                  // Skip button — hidden on last page
-                  if (!_isLast)
-                    GestureDetector(
-                      onTap: () => context.go(RouteNames.register),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF1F5F9),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          'Skip',
-                          style: AppTypography.kidsBodyMd.copyWith(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black54,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            Expanded(
-              flex: 6,
-              child: PageView.builder(
-                controller: _pageController,
-                onPageChanged: (i) => setState(() => _currentPage = i),
-                itemCount: _pages.length,
-                physics: const BouncingScrollPhysics(),
-                itemBuilder: (context, i) =>
-                    _IllustrationPage(asset: _pages[i].asset),
-              ),
-            ),
-
-            // ── Text + dots + button ────────────────────────────────────
-            Expanded(
-              flex: 4,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(32, 0, 32, 24),
-                child: Column(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFFFF1E6), Color(0xFFFFFBF5)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // ── Top row: Back + Skip ────────────────────────────────────
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
                   children: [
-                    const SizedBox(height: 16),
-                    // Title
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      child: Text(
-                        _pages[_currentPage].title,
-                        key: ValueKey('title$_currentPage'),
-                        style: AppTypography.kidsDisplayLg.copyWith(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w900,
-                          color: const Color(0xFF1A1A2E),
-                          height: 1.15,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Subtitle
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      child: Text(
-                        _pages[_currentPage].body,
-                        key: ValueKey('body$_currentPage'),
-                        style: AppTypography.kidsBodyMd.copyWith(
-                          fontSize: 14,
-                          color: Colors.black45,
-                          height: 1.6,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-
-                    const Spacer(),
-
-                    // Dot indicators
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(_pages.length, (i) {
-                        final active = i == _currentPage;
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 250),
-                          margin:
-                              const EdgeInsets.symmetric(horizontal: 4),
-                          width: active ? 24 : 8,
-                          height: 8,
+                    // Back button — hidden on first page
+                    if (!_isFirst)
+                      GestureDetector(
+                        onTap: _back,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 8),
                           decoration: BoxDecoration(
-                            color: active
-                                ? AppColors.orange500
-                                : const Color(0xFFE2E8F0),
-                            borderRadius: BorderRadius.circular(4),
+                            color: const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                        );
-                      }),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Next / Get Started button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: _next,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.orange500,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(32),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.arrow_back_ios_rounded,
+                                  size: 14, color: Colors.black54),
+                              const SizedBox(width: 2),
+                              Text(
+                                'Back',
+                                style: AppTypography.kidsBodyMd.copyWith(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _isLast ? 'Get Started' : 'Next',
-                              style: AppTypography.kidsBodyMd.copyWith(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
+                      )
+                    else
+                      const SizedBox(width: 60),
+                    const Spacer(),
+                    // Skip button — hidden on last page
+                    if (!_isLast)
+                      GestureDetector(
+                        onTap: () => context.go(RouteNames.register),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            'Skip',
+                            style: AppTypography.kidsBodyMd.copyWith(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black54,
                             ),
-                            const SizedBox(width: 8),
-                            const Icon(Icons.arrow_forward_rounded,
-                                size: 20, color: Colors.white),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),
-            ),
-          ],
+              Expanded(
+                flex: 6,
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: (i) => setState(() => _currentPage = i),
+                  itemCount: _pages.length,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: (context, i) =>
+                      _IllustrationPage(asset: _pages[i].asset),
+                ),
+              ),
+
+              // ── Text + dots + button ────────────────────────────────────
+              Expanded(
+                flex: 4,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 24),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 16),
+                      // Title
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: Text(
+                          _pages[_currentPage].title,
+                          key: ValueKey('title$_currentPage'),
+                          style: AppTypography.kidsDisplayLg.copyWith(
+                            fontSize: 36,
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFF1A1A2E),
+                            height: 1.15,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Subtitle
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: Text(
+                          _pages[_currentPage].body,
+                          key: ValueKey('body$_currentPage'),
+                          style: AppTypography.kidsBodyMd.copyWith(
+                            fontSize: 14,
+                            color: Colors.black54,
+                            height: 1.6,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+
+                      const Spacer(),
+
+                      // Dot indicators
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(_pages.length, (i) {
+                          final active = i == _currentPage;
+                          return AnimatedContainer(
+                            duration: const Duration(milliseconds: 250),
+                            margin:
+                                const EdgeInsets.symmetric(horizontal: 5),
+                            width: active ? 30 : 10,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: active
+                                  ? AppColors.orange500
+                                  : const Color(0xFFE2E8F0),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          );
+                        }),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Next / Get Started button
+                      GestureDetector(
+                        onTap: _next,
+                        child: Container(
+                          width: double.infinity,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color(0xFFF97316),
+                                Color(0xFFEC4899)
+                              ],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                            ),
+                            borderRadius: BorderRadius.circular(32),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFEC4899)
+                                    .withValues(alpha: 0.35),
+                                blurRadius: 14,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                _isLast ? 'Get Started' : 'Next',
+                                style: AppTypography.kidsBodyMd.copyWith(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(Icons.arrow_forward_rounded,
+                                  size: 22, color: Colors.white),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

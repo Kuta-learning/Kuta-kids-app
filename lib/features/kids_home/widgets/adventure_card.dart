@@ -13,6 +13,7 @@ class AdventureCard extends StatefulWidget {
   final int progress;
   final int total;
   final Color progressColor;
+  final List<Color>? cardGradient;
   final String? thumbnailUrl;
   final VoidCallback? onTap;
 
@@ -25,6 +26,7 @@ class AdventureCard extends StatefulWidget {
     required this.progress,
     required this.total,
     required this.progressColor,
+    this.cardGradient,
     this.thumbnailUrl,
     this.onTap,
   });
@@ -69,6 +71,8 @@ class _AdventureCardState extends State<AdventureCard>
   Widget build(BuildContext context) {
     final pct = widget.total > 0 ? widget.progress / widget.total : 0.0;
     final pctInt = (pct * 100).round();
+    final gradient =
+        widget.cardGradient ?? const [Color(0xFFFFB347), Color(0xFFFF8C00)];
 
     return GestureDetector(
       onTap: widget.onTap,
@@ -83,15 +87,19 @@ class _AdventureCardState extends State<AdventureCard>
         scale: _controller,
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+          padding: const EdgeInsets.fromLTRB(18, 24, 18, 18),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              colors: gradient,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(28),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.07),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+                color: gradient.last.withValues(alpha: 0.35),
+                blurRadius: 14,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
@@ -100,11 +108,12 @@ class _AdventureCardState extends State<AdventureCard>
             children: [
               // Circular thumbnail / emoji badge
               Container(
-                width: 88,
-                height: 88,
+                width: 92,
+                height: 92,
                 decoration: BoxDecoration(
                   color: widget.color,
                   shape: BoxShape.circle,
+                  border: Border.all(color: widget.progressColor, width: 3),
                 ),
                 child: widget.thumbnailUrl != null &&
                         widget.thumbnailUrl!.isNotEmpty
@@ -114,29 +123,29 @@ class _AdventureCardState extends State<AdventureCard>
                           fit: BoxFit.cover,
                           errorBuilder: (context, e, s) => Center(
                             child: Text(widget.emoji,
-                                style: const TextStyle(fontSize: 38)),
+                                style: const TextStyle(fontSize: 40)),
                           ),
                         ),
                       )
                     : Center(
                         child: Text(widget.emoji,
-                            style: const TextStyle(fontSize: 38)),
+                            style: const TextStyle(fontSize: 40)),
                       ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               // Course title
               Text(
                 widget.title,
                 style: AppTypography.kidsBodyMd.copyWith(
                   fontWeight: FontWeight.w800,
-                  fontSize: 16,
-                  color: Colors.black87,
+                  fontSize: 17,
+                  color: Colors.white,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               // Progress label row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -145,44 +154,44 @@ class _AdventureCardState extends State<AdventureCard>
                     'Progress',
                     style: AppTypography.kidsBodyMd.copyWith(
                       fontSize: 13,
-                      color: Colors.black54,
-                      fontWeight: FontWeight.w500,
+                      color: Colors.white.withValues(alpha: 0.9),
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   Text(
                     '$pctInt%',
                     style: AppTypography.kidsBodyMd.copyWith(
-                      fontSize: 13,
-                      color: Colors.black54,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 8),
               // Progress bar
               ClipRRect(
                 borderRadius: BorderRadius.circular(100),
                 child: LinearProgressIndicator(
                   value: pct.clamp(0.0, 1.0),
-                  minHeight: 8,
-                  backgroundColor: const Color(0xFFE2E8F0),
+                  minHeight: 10,
+                  backgroundColor: Colors.white.withValues(alpha: 0.4),
                   valueColor:
-                      AlwaysStoppedAnimation<Color>(widget.progressColor),
+                      const AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               ),
               if (pct >= 1.0) ...[
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('🏆', style: TextStyle(fontSize: 13)),
+                    const Text('🏆', style: TextStyle(fontSize: 14)),
                     const SizedBox(width: 4),
                     Text(
                       'Completed!',
                       style: AppTypography.kidsBodyMd.copyWith(
                         fontSize: 12,
-                        color: const Color(0xFF16A34A),
+                        color: Colors.white,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

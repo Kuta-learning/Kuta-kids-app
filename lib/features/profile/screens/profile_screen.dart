@@ -32,7 +32,7 @@ class _ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.surfaceApp,
+      backgroundColor: const Color(0xFFFFFBF5),
       body: SafeArea(
         child: Column(
           children: [
@@ -44,7 +44,7 @@ class _ProfileView extends StatelessWidget {
                     'Kuta Learning',
                     style: AppTypography.kidsHeadlineLg.copyWith(
                       fontSize: 20,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w900,
                       color: AppColors.orange900,
                     ),
                   ),
@@ -78,60 +78,102 @@ class _ProfileView extends StatelessWidget {
                       const SizedBox(height: 20),
                       _buildStatCard(
                         icon: Icons.star_rounded,
-                        iconBackground: const Color(0xFFE0F2FE),
                         iconColor: AppColors.info,
                         title: 'Total Stars Collected',
-                        value: profile?.stars != null
-                            ? '${profile!.stars}'
-                            : '–',
-                        valueColor: AppColors.info,
+                        value:
+                            profile?.stars != null ? '${profile!.stars}' : '–',
+                        gradient: const [
+                          Color(0xFF60A5FA),
+                          Color(0xFF2563EB)
+                        ],
                       ),
                       const SizedBox(height: 16),
                       _buildStatCard(
                         icon: Icons.military_tech_rounded,
-                        iconBackground: const Color(0xFFFFEDD5),
                         iconColor: AppColors.orange500,
                         title: 'Badges Won',
                         value: profile?.badges != null
                             ? '${profile!.badges!.length}'
                             : '–',
-                        valueColor: AppColors.orange500,
+                        gradient: const [
+                          Color(0xFFFFB347),
+                          Color(0xFFFF8C00)
+                        ],
                       ),
                       const SizedBox(height: 16),
                       _buildRecentBadges(context),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        height: 48,
-                        child: ElevatedButton.icon(
-                          onPressed: () => context.push(RouteNames.progress),
-                          icon: const Icon(Icons.insights_rounded),
-                          label: const Text('View Progress'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.orange500,
-                            foregroundColor: Colors.white,
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                      const SizedBox(height: 24),
+                      // View Progress — playful gradient button
+                      GestureDetector(
+                        onTap: () => context.push(RouteNames.progress),
+                        child: Container(
+                          height: 56,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color(0xFFF97316),
+                                Color(0xFFEC4899)
+                              ],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
                             ),
+                            borderRadius: BorderRadius.circular(28),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFEC4899)
+                                    .withValues(alpha: 0.35),
+                                blurRadius: 12,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.insights_rounded,
+                                  color: Colors.white, size: 22),
+                              SizedBox(width: 8),
+                              Text(
+                                'View Progress',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                       const SizedBox(height: 12),
-                      SizedBox(
-                        height: 48,
-                        child: OutlinedButton.icon(
-                          onPressed: () => context.read<AuthBloc>().add(
-                                const AuthLogoutRequested(),
-                              ),
-                          icon: const Icon(Icons.logout_rounded),
-                          label: const Text('Log out'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.orange900,
-                            side:
-                                const BorderSide(color: AppColors.orange500),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                      // Log out — playful outlined button
+                      GestureDetector(
+                        onTap: () => context.read<AuthBloc>().add(
+                              const AuthLogoutRequested(),
                             ),
+                        child: Container(
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(28),
+                            border: Border.all(
+                                color: AppColors.orange500, width: 2),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.logout_rounded,
+                                  color: AppColors.orange900, size: 22),
+                              SizedBox(width: 8),
+                              Text(
+                                'Log out',
+                                style: TextStyle(
+                                  color: AppColors.orange900,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -157,38 +199,63 @@ class _ProfileView extends StatelessWidget {
           clipBehavior: Clip.none,
           alignment: Alignment.bottomCenter,
           children: [
+            // Colorful gradient ring
             Container(
-              width: 120,
-              height: 120,
+              width: 156,
+              height: 156,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.info, width: 4),
                 gradient: const LinearGradient(
-                  colors: [Color(0xFFE2ECF8), Color(0xFFC3D8F5)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFFF97316), Color(0xFFEC4899)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFEC4899).withValues(alpha: 0.35),
+                    blurRadius: 14,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(7),
+                child: Container(
+                  width: 140,
+                  height: 140,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                  ),
+                  child: ClipOval(
+                    child: avatarUrl != null
+                        ? Image.network(
+                            avatarUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context2, err, stack) => const Icon(
+                              Icons.pets_rounded,
+                              size: 72,
+                              color: AppColors.info,
+                            ),
+                          )
+                        : const Center(
+                            child: Icon(
+                              Icons.pets_rounded,
+                              size: 72,
+                              color: AppColors.info,
+                            ),
+                          ),
+                  ),
                 ),
               ),
-              child: ClipOval(
-                child: avatarUrl != null
-                    ? Image.network(
-                        avatarUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context2, err, stack) => const Icon(
-                          Icons.pets_rounded,
-                          size: 60,
-                          color: AppColors.info,
-                        ),
-                      )
-                    : const Center(
-                        child: Icon(
-                          Icons.pets_rounded,
-                          size: 60,
-                          color: AppColors.info,
-                        ),
-                      ),
-              ),
             ),
+            // Animated sparkle
+            const Positioned(
+              top: -4,
+              right: 6,
+              child: _Sparkle(),
+            ),
+            // Change avatar pill
             Positioned(
               bottom: -12,
               child: GestureDetector(
@@ -235,7 +302,7 @@ class _ProfileView extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 26),
         name.isEmpty
             ? Container(
                 width: 120,
@@ -249,12 +316,12 @@ class _ProfileView extends StatelessWidget {
                 name,
                 textAlign: TextAlign.center,
                 style: AppTypography.kidsHeadlineLg.copyWith(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
+                  fontSize: 30,
+                  fontWeight: FontWeight.w900,
                   color: AppColors.orange900,
                 ),
               ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         gradeLabel.isEmpty
             ? Container(
                 width: 80,
@@ -265,20 +332,24 @@ class _ProfileView extends StatelessWidget {
                 ),
               )
             : Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF93C5FD),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF60A5FA), Color(0xFF2563EB)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.star_rounded, color: Colors.white, size: 14),
-                    const SizedBox(width: 4),
+                    Icon(Icons.star_rounded, color: Colors.white, size: 16),
+                    SizedBox(width: 4),
                     Text(
-                      gradeLabel,
-                      style: const TextStyle(
-                        fontSize: 11,
+                      'Grade',
+                      style: TextStyle(
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
@@ -286,7 +357,7 @@ class _ProfileView extends StatelessWidget {
                   ],
                 ),
               ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
@@ -307,37 +378,52 @@ class _ProfileView extends StatelessWidget {
 
   Widget _buildStatCard({
     required IconData icon,
-    required Color iconBackground,
     required Color iconColor,
     required String title,
     required String value,
-    required Color valueColor,
+    required List<Color> gradient,
   }) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: _cardDecoration(),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: gradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: gradient.last.withValues(alpha: 0.3),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
       child: Column(
         children: [
           CircleAvatar(
-            radius: 16,
-            backgroundColor: iconBackground,
-            child: Icon(icon, color: iconColor, size: 20),
+            radius: 22,
+            backgroundColor: Colors.white,
+            child: Icon(icon, color: iconColor, size: 26),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
             title,
             style: AppTypography.kidsBodyMd.copyWith(
-              fontSize: 12,
+              fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
+              color: Colors.white.withValues(alpha: 0.9),
             ),
+            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 4),
           Text(
             value,
             style: AppTypography.kidsHeadlineLg.copyWith(
-              fontSize: 32,
-              color: valueColor,
+              fontSize: 34,
+              color: Colors.white,
+              fontWeight: FontWeight.w900,
             ),
           ),
         ],
@@ -347,10 +433,26 @@ class _ProfileView extends StatelessWidget {
 
   Widget _buildRecentBadges(BuildContext context) {
     final badges = [
-      ('Fast Reader', Icons.menu_book_rounded, const Color(0xFFFFB020)),
-      ('Math Whiz', Icons.calculate_rounded, const Color(0xFF3B82F6)),
-      ('Earth Hero', Icons.eco_rounded, const Color(0xFF10B981)),
-      ('Pixel Artist', Icons.palette_rounded, const Color(0xFF8B5CF6)),
+      (
+        'Fast Reader',
+        Icons.menu_book_rounded,
+        const [Color(0xFFFFD166), Color(0xFFF59E0B)]
+      ),
+      (
+        'Math Whiz',
+        Icons.calculate_rounded,
+        const [Color(0xFF60A5FA), Color(0xFF2563EB)]
+      ),
+      (
+        'Earth Hero',
+        Icons.eco_rounded,
+        const [Color(0xFF4ADE80), Color(0xFF16A34A)]
+      ),
+      (
+        'Pixel Artist',
+        Icons.palette_rounded,
+        const [Color(0xFFF472B6), Color(0xFFEC4899)]
+      ),
     ];
 
     return Container(
@@ -366,7 +468,7 @@ class _ProfileView extends StatelessWidget {
                 'My Recent Badges',
                 style: AppTypography.kidsBodyMd.copyWith(
                   fontSize: 16,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w900,
                   color: AppColors.textPrimary,
                 ),
               ),
@@ -400,7 +502,7 @@ class _ProfileView extends StatelessWidget {
                   (badge) => _buildBadgeItem(
                     title: badge.$1,
                     icon: badge.$2,
-                    color: badge.$3,
+                    gradient: badge.$3,
                   ),
                 )
                 .toList(),
@@ -413,18 +515,30 @@ class _ProfileView extends StatelessWidget {
   Widget _buildBadgeItem({
     required String title,
     required IconData icon,
-    required Color color,
+    required List<Color> gradient,
   }) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FC),
-        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          colors: gradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: color, size: 32),
+          Container(
+            width: 44,
+            height: 44,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: gradient.last, size: 26),
+          ),
           const SizedBox(height: 8),
           Text(
             title,
@@ -432,7 +546,7 @@ class _ProfileView extends StatelessWidget {
             style: AppTypography.kidsBodyMd.copyWith(
               fontSize: 12,
               fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
+              color: Colors.white,
             ),
           ),
         ],
@@ -443,14 +557,55 @@ class _ProfileView extends StatelessWidget {
   BoxDecoration _cardDecoration() {
     return BoxDecoration(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(24),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.04),
-          blurRadius: 10,
+          color: Colors.black.withValues(alpha: 0.05),
+          blurRadius: 12,
           offset: const Offset(0, 4),
         ),
       ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// A gently pulsing sparkle for the avatar.
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _Sparkle extends StatefulWidget {
+  const _Sparkle();
+
+  @override
+  State<_Sparkle> createState() => _SparkleState();
+}
+
+class _SparkleState extends State<_Sparkle>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: Tween<double>(begin: 0.6, end: 1.15).animate(
+        CurvedAnimation(parent: _controller, curve: Curves.elasticInOut),
+      ),
+      child: const Text('✨', style: TextStyle(fontSize: 30)),
     );
   }
 }
