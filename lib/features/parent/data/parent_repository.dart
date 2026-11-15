@@ -34,7 +34,8 @@ class ParentGateQuestion {
     final opts = json['options'];
     return ParentGateQuestion(
       id: json['_id']?.toString() ?? json['id']?.toString() ?? '',
-      question: json['question']?.toString() ?? '',
+      // API returns field as 'text' — also handle 'question' for future-proofing
+      question: json['text']?.toString() ?? json['question']?.toString() ?? '',
       options: opts is List
           ? opts
               .map((e) => ParentGateOption.fromJson(e as Map<String, dynamic>))
@@ -123,7 +124,8 @@ class ParentRepository {
       );
       final data = response.data;
       if (data is Map) {
-        return data['correct'] == true;
+        // API returns { isCorrect: bool }
+        return data['isCorrect'] == true || data['correct'] == true;
       }
       return false;
     } catch (_) {

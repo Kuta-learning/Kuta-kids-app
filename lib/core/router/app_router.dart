@@ -18,6 +18,7 @@ import '../../features/learning/screens/course_detail_screen.dart';
 import '../../features/learning/screens/learn_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 import '../../features/parent/screens/parent_gate_screen.dart';
+import '../../features/parent/screens/parent_settings_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
 import '../../features/progress/screens/progress_screen.dart';
 import 'route_names.dart';
@@ -72,6 +73,11 @@ class AppRouter {
         path: RouteNames.parentPin,
         name: 'parentPin',
         builder: (context, state) => const ParentGateScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.parentSettings,
+        name: 'parentSettings',
+        builder: (context, state) => const ParentSettingsScreen(),
       ),
 
       // Kids shell — persistent bottom nav across all tabs

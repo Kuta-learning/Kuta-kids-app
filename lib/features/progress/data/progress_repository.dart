@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,6 +18,7 @@ class CourseProgressEntry {
 
 class ProgressRepository {
   static const String _baseUrl = 'https://kuta-learning.onrender.com/api';
+  static const int _ttlMs = 300000; // 5 minutes
 
   // Mock fallback — three hardcoded entries used when API is unreachable.
   static final List<CourseProgressEntry> mockEntries = [
@@ -83,17 +87,28 @@ class ProgressRepository {
   }
 
   /// Fetches all courses for the student's grade and the progress for each.
-  ///
-  /// Strategy:
-  /// 1. Read the persisted grade level (default 1).
-  /// 2. GET /courses?gradeLevel=N to obtain the course list.
-  /// 3. For each course GET /progress/courses/:id.
-  /// 4. Return the combined list. Falls back to [_mockEntries] on any error.
+  /// Uses stale-while-revalidate cache (5 min TTL).
   Future<List<CourseProgressEntry>> getCourseProgressList() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final gradeLevel = prefs.getInt(StorageKeys.gradeLevel) ?? 1;
+    final prefs = await SharedPreferences.getInstance();
+    final cached = prefs.getString(StorageKeys.cacheProgress);
+    final ts = prefs.getInt(StorageKeys.cacheProgressTs) ?? 0;
+    final now = DateTime.now().millisecondsSinceEpoch;
 
+    if (cached != null && (now - ts) < _ttlMs) {
+      final entries = _decodeEntries(cached);
+      if (entries != null) {
+        unawaited(_fetchAndCache(prefs));
+        return entries;
+      }
+    }
+
+    return _fetchAndCache(prefs);
+  }
+
+  Future<List<CourseProgressEntry>> _fetchAndCache(
+      SharedPreferences prefs) async {
+    try {
+      final gradeLevel = prefs.getInt(StorageKeys.gradeLevel) ?? 1;
       final dio = await _client();
 
       // Step 1: fetch courses
@@ -112,7 +127,7 @@ class ProgressRepository {
         courseList = [];
       }
 
-      if (courseList.isEmpty) return mockEntries;
+      if (courseList.isEmpty) return _cachedOrMock(prefs);
 
       final courses = courseList
           .map((e) => CourseModel.fromJson(e as Map<String, dynamic>))
@@ -128,7 +143,6 @@ class ProgressRepository {
                 progressResp.data as Map<String, dynamic>);
             return CourseProgressEntry(course: course, progress: progress);
           } catch (_) {
-            // Fallback progress derived from the course model itself.
             return CourseProgressEntry(
               course: course,
               progress: CourseProgress(
@@ -143,9 +157,72 @@ class ProgressRepository {
         }),
       );
 
-      return entries.isNotEmpty ? entries : mockEntries;
+      final result = entries.isNotEmpty ? entries : mockEntries;
+      await _writeCache(prefs, result);
+      return result;
     } catch (_) {
-      return mockEntries;
+      return _cachedOrMock(prefs);
     }
+  }
+
+  Future<void> _writeCache(
+      SharedPreferences prefs, List<CourseProgressEntry> entries) async {
+    final list = entries
+        .map((e) => {
+              'courseId': e.course.id,
+              'courseTitle': e.course.title,
+              'courseDescription': e.course.description,
+              'chapterCount': e.course.chapterCount,
+              'completedLessons': e.course.completedLessons,
+              'totalLessons': e.course.totalLessons,
+              'progressPercentage': e.course.progressPercentage,
+              'thumbnailUrl': e.course.thumbnailUrl,
+              'progressTotalLessons': e.progress.totalLessons,
+              'progressCompletedLessons': e.progress.completedLessons,
+              'progressPercentage2': e.progress.progressPercentage,
+            })
+        .toList();
+    await prefs.setString(StorageKeys.cacheProgress, jsonEncode(list));
+    await prefs.setInt(
+        StorageKeys.cacheProgressTs, DateTime.now().millisecondsSinceEpoch);
+  }
+
+  List<CourseProgressEntry>? _decodeEntries(String json) {
+    try {
+      final list = jsonDecode(json) as List<dynamic>;
+      return list.map((e) {
+        final m = e as Map<String, dynamic>;
+        final course = CourseModel(
+          id: m['courseId']?.toString() ?? '',
+          title: m['courseTitle']?.toString() ?? '',
+          description: m['courseDescription']?.toString(),
+          chapterCount: (m['chapterCount'] as num?)?.toInt() ?? 0,
+          completedLessons: (m['completedLessons'] as num?)?.toInt() ?? 0,
+          totalLessons: (m['totalLessons'] as num?)?.toInt() ?? 0,
+          progressPercentage:
+              (m['progressPercentage'] as num?)?.toDouble() ?? 0.0,
+          thumbnailUrl: m['thumbnailUrl']?.toString(),
+        );
+        final progress = CourseProgress(
+          totalLessons: (m['progressTotalLessons'] as num?)?.toInt() ?? 0,
+          completedLessons:
+              (m['progressCompletedLessons'] as num?)?.toInt() ?? 0,
+          progressPercentage:
+              (m['progressPercentage2'] as num?)?.toDouble() ?? 0.0,
+        );
+        return CourseProgressEntry(course: course, progress: progress);
+      }).toList();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  List<CourseProgressEntry> _cachedOrMock(SharedPreferences prefs) {
+    final cached = prefs.getString(StorageKeys.cacheProgress);
+    if (cached != null) {
+      final entries = _decodeEntries(cached);
+      if (entries != null) return entries;
+    }
+    return mockEntries;
   }
 }

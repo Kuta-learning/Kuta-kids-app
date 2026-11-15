@@ -32,4 +32,15 @@ class CourseModel {
       thumbnailUrl: json['thumbnailUrl']?.toString(),
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'description': description,
+        'chapterCount': chapterCount,
+        'completedLessons': completedLessons,
+        'totalLessons': totalLessons,
+        'progressPercentage': progressPercentage,
+        'thumbnailUrl': thumbnailUrl,
+      };
 }

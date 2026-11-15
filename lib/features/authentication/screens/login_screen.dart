@@ -316,7 +316,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                       label: 'Google',
                                       icon: Icons.g_mobiledata_rounded,
                                       iconColor: const Color(0xFFEA4335),
-                                      onTap: () {},
+                                      onTap: () {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                          content: Text(
+                                              'Google sign-in coming soon!'),
+                                        ));
+                                      },
                                     ),
                                   ),
                                   const SizedBox(width: 12),
@@ -325,7 +331,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                       label: 'Apple',
                                       icon: Icons.apple_rounded,
                                       iconColor: Colors.black87,
-                                      onTap: () {},
+                                      onTap: () {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                          content: Text(
+                                              'Apple sign-in coming soon!'),
+                                        ));
+                                      },
                                     ),
                                   ),
                                 ],

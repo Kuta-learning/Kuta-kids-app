@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_typography.dart';
@@ -74,6 +75,7 @@ class _AdventureCardState extends State<AdventureCard>
       onTapDown: (_) => _controller.reverse(),
       onTapUp: (_) {
         _controller.forward();
+        HapticFeedback.lightImpact();
         _onTap();
       },
       onTapCancel: () => _controller.forward(),

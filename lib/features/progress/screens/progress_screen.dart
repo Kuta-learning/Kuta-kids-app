@@ -55,9 +55,20 @@ class _ProgressView extends StatelessWidget {
                     entries = state.entries;
                   }
 
-                  return ListView(
+                  return RefreshIndicator(
+                    color: AppColors.orange500,
+                    onRefresh: () async {
+                      context
+                          .read<ProgressBloc>()
+                          .add(const ProgressRequested());
+                      await context
+                          .read<ProgressBloc>()
+                          .stream
+                          .firstWhere((s) => s is! ProgressLoading);
+                    },
+                    child: ListView(
                     padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                    physics: const BouncingScrollPhysics(),
+                    physics: const AlwaysScrollableScrollPhysics(),
                     children: [
                       Text(
                         'Hey, Little\nExplorer!',
@@ -140,12 +151,19 @@ class _ProgressView extends StatelessWidget {
                               color: AppColors.textPrimary,
                             ),
                           ),
-                          Text(
-                            'See All Gallery',
-                            style: AppTypography.kidsBodyMd.copyWith(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.orange900,
+                          GestureDetector(
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Badge gallery coming soon! 🏆')),
+                              );
+                            },
+                            child: Text(
+                              'See All Gallery',
+                              style: AppTypography.kidsBodyMd.copyWith(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.orange900,
+                              ),
                             ),
                           ),
                         ],
@@ -199,6 +217,7 @@ class _ProgressView extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
                   );
                 },
               ),
