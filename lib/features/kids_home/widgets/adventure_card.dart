@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/constants/app_colors.dart' show cardTextColorOn;
 import '../../../core/constants/app_typography.dart';
 import '../../../core/router/route_names.dart';
 
@@ -139,7 +140,7 @@ class _AdventureCardState extends State<AdventureCard>
                 style: AppTypography.kidsBodyMd.copyWith(
                   fontWeight: FontWeight.w800,
                   fontSize: 17,
-                  color: Colors.white,
+                  color: cardTextColorOn(gradient),
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
@@ -154,7 +155,7 @@ class _AdventureCardState extends State<AdventureCard>
                     'Progress',
                     style: AppTypography.kidsBodyMd.copyWith(
                       fontSize: 13,
-                      color: Colors.white.withValues(alpha: 0.9),
+                      color: cardTextColorOn(gradient).withValues(alpha: 0.9),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -162,7 +163,7 @@ class _AdventureCardState extends State<AdventureCard>
                     '$pctInt%',
                     style: AppTypography.kidsBodyMd.copyWith(
                       fontSize: 14,
-                      color: Colors.white,
+                      color: cardTextColorOn(gradient),
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -191,7 +192,7 @@ class _AdventureCardState extends State<AdventureCard>
                       'Completed!',
                       style: AppTypography.kidsBodyMd.copyWith(
                         fontSize: 12,
-                        color: Colors.white,
+                        color: cardTextColorOn(gradient),
                         fontWeight: FontWeight.w700,
                       ),
                     ),

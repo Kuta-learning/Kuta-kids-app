@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_colors.dart'
+    show AppColors, cardTextColorOn;
 import '../../../core/constants/app_typography.dart';
 import '../../kids_home/bloc/home_bloc.dart';
 import '../../kids_home/bloc/home_event.dart';
@@ -471,7 +472,7 @@ class _TopicCard extends StatelessWidget {
     [Color(0xFF4ADE80), Color(0xFF16A34A)],
     [Color(0xFFF472B6), Color(0xFFEC4899)],
     [Color(0xFFFACC15), Color(0xFFF59E0B)],
-    [Color(0xFF38BDF8), Color(0xFF0EA5E9)],
+    [Color(0xFF0EA5E9), Color(0xFF0284C7)],
     [Color(0xFFA78BFA), Color(0xFF7C3AED)],
     [Color(0xFF2DD4BF), Color(0xFF0D9488)],
   ];
@@ -560,7 +561,7 @@ class _TopicCard extends StatelessWidget {
                               fontWeight: FontWeight.w800,
                               color: isLocked
                                   ? AppColors.textSecondary
-                                  : Colors.white,
+                                  : cardTextColorOn(gradient),
                             ),
                           ),
                           if (total > 0) ...[
@@ -571,7 +572,8 @@ class _TopicCard extends StatelessWidget {
                                 fontSize: 12,
                                 color: isLocked
                                     ? AppColors.textSecondary
-                                    : Colors.white.withValues(alpha: 0.85),
+                                    : cardTextColorOn(gradient)
+                                        .withValues(alpha: 0.85),
                               ),
                             ),
                           ],

@@ -341,14 +341,15 @@ class _ProfileView extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.star_rounded, color: Colors.white, size: 16),
-                    SizedBox(width: 4),
+                    const Icon(Icons.star_rounded,
+                        color: Colors.white, size: 16),
+                    const SizedBox(width: 4),
                     Text(
-                      'Grade',
-                      style: TextStyle(
+                      gradeLabel,
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,

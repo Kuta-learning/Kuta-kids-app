@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:kuta_learning_app/core/constants/app_colors.dart';
+import 'package:kuta_learning_app/core/constants/app_colors.dart'
+    show AppColors, cardTextColorOn;
 import 'package:kuta_learning_app/core/constants/app_typography.dart';
 import 'package:kuta_learning_app/core/router/route_names.dart';
 
@@ -32,21 +33,13 @@ class PracticeHomePage extends StatelessWidget {
     Color(0xFF06B6D4),
     Color(0xFF6366F1),
   ];
-  static const _iconBgs = [
-    Color(0xFFFFECE0),
-    Color(0xFFEFF6FF),
-    Color(0xFFE0F2FE),
-    Color(0xFFFFEDD5),
-    Color(0xFFCFFAFE),
-    Color(0xFFEEF2FF),
-  ];
   static const _challengeGradients = [
     [Color(0xFF60A5FA), Color(0xFF2563EB)],
     [Color(0xFFFFB347), Color(0xFFFF8C00)],
     [Color(0xFF4ADE80), Color(0xFF16A34A)],
     [Color(0xFFF472B6), Color(0xFFEC4899)],
     [Color(0xFFFACC15), Color(0xFFF59E0B)],
-    [Color(0xFF38BDF8), Color(0xFF0EA5E9)],
+    [Color(0xFF0EA5E9), Color(0xFF0284C7)],
   ];
 
   @override
@@ -111,8 +104,6 @@ class _PracticeHomeView extends StatelessWidget {
                               i % PracticeHomePage._icons.length];
                           final iconColor = PracticeHomePage._iconColors[
                               i % PracticeHomePage._iconColors.length];
-                          final iconBg = PracticeHomePage._iconBgs[
-                              i % PracticeHomePage._iconBgs.length];
 
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 16),
@@ -123,7 +114,6 @@ class _PracticeHomeView extends StatelessWidget {
                               progress: 0.0,
                               icon: icon,
                               iconColor: iconColor,
-                              iconBg: iconBg,
                               accentColor: iconColor,
                               gradient: PracticeHomePage._challengeGradients[
                                   i % PracticeHomePage._challengeGradients.length],
@@ -313,7 +303,6 @@ class ChallengeCard extends StatelessWidget {
     required this.progress,
     required this.icon,
     required this.iconColor,
-    required this.iconBg,
     required this.accentColor,
     required this.gradient,
     required this.isDone,
@@ -326,7 +315,6 @@ class ChallengeCard extends StatelessWidget {
   final double progress;
   final IconData icon;
   final Color iconColor;
-  final Color iconBg;
   final Color accentColor;
   final List<Color> gradient;
   final bool isDone;
@@ -382,10 +370,10 @@ class ChallengeCard extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 title,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w800,
-                                  color: Colors.white,
+                                  color: cardTextColorOn(gradient),
                                 ),
                               ),
                             ),
@@ -416,7 +404,7 @@ class ChallengeCard extends StatelessWidget {
                           description,
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.white.withValues(alpha: 0.9),
+                            color: cardTextColorOn(gradient).withValues(alpha: 0.9),
                             height: 1.3,
                           ),
                         ),
@@ -431,10 +419,10 @@ class ChallengeCard extends StatelessWidget {
                             const SizedBox(width: 4),
                             Text(
                               stars,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                color: Colors.white,
+                                color: cardTextColorOn(gradient),
                               ),
                             ),
                             const SizedBox(width: 20),

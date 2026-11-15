@@ -53,7 +53,7 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
     [Color(0xFF4ADE80), Color(0xFF16A34A)],
     [Color(0xFFF472B6), Color(0xFFEC4899)],
     [Color(0xFFFACC15), Color(0xFFF59E0B)],
-    [Color(0xFF38BDF8), Color(0xFF0EA5E9)],
+    [Color(0xFF0EA5E9), Color(0xFF0284C7)],
     [Color(0xFFA78BFA), Color(0xFF7C3AED)],
     [Color(0xFFFB923C), Color(0xFFF97316)],
   ];
@@ -129,7 +129,8 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionHeader('Your Adventures 🗺️', 'View All →', RouteNames.kidsLearn),
+          _buildSectionHeader('Your Adventures 🗺️', 'View All →', RouteNames.kidsLearn,
+              backgroundColor: const Color(0xFFF97316)),
           if (courses.isEmpty)
             _buildEmptyState()
           else
@@ -303,8 +304,9 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
     );
   }
 
-  Widget _buildSectionHeader(String title, String action, String route) {
-    return Padding(
+  Widget _buildSectionHeader(String title, String action, String route,
+      {Color? backgroundColor}) {
+    final inner = Padding(
       padding: const EdgeInsets.fromLTRB(20, 22, 20, 12),
       child: Row(
         children: [
@@ -313,7 +315,7 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
             style: AppTypography.kidsHeadlineLg.copyWith(
               fontWeight: FontWeight.w900,
               fontSize: 20,
-              color: Colors.black87,
+              color: backgroundColor != null ? Colors.white : Colors.black87,
             ),
           ),
           const Spacer(),
@@ -325,7 +327,9 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
             child: Text(
               action,
               style: AppTypography.kidsBodyMd.copyWith(
-                color: AppColors.orange500,
+                color: backgroundColor != null
+                    ? Colors.white.withValues(alpha: 0.9)
+                    : AppColors.orange500,
                 fontWeight: FontWeight.w700,
                 fontSize: 13,
               ),
@@ -333,6 +337,19 @@ class _KidsHomeScreenState extends State<KidsHomeScreen>
           ),
         ],
       ),
+    );
+    if (backgroundColor == null) return inner;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [backgroundColor, backgroundColor.withValues(alpha: 0.75)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: inner,
     );
   }
 

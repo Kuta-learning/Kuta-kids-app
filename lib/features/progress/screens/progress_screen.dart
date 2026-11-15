@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_colors.dart'
+    show AppColors, cardTextColorOn;
 import '../../../core/constants/app_typography.dart';
 import '../../../core/router/route_names.dart';
 import '../bloc/progress_bloc.dart';
@@ -32,7 +33,7 @@ class _ProgressView extends StatelessWidget {
     [Color(0xFF4ADE80), Color(0xFF16A34A)],
     [Color(0xFFF472B6), Color(0xFFEC4899)],
     [Color(0xFFFACC15), Color(0xFFF59E0B)],
-    [Color(0xFF38BDF8), Color(0xFF0EA5E9)],
+    [Color(0xFF0EA5E9), Color(0xFF0284C7)],
   ];
 
   @override
@@ -331,7 +332,7 @@ class _ProgressCard extends StatelessWidget {
                         style: AppTypography.kidsBodyMd.copyWith(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
-                          color: Colors.white,
+                          color: cardTextColorOn(gradient),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -342,7 +343,7 @@ class _ProgressCard extends StatelessWidget {
                       style: AppTypography.kidsBodyMd.copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.w900,
-                        color: Colors.white,
+                        color: cardTextColorOn(gradient),
                       ),
                     ),
                   ],
@@ -352,7 +353,7 @@ class _ProgressCard extends StatelessWidget {
                   subtitle,
                   style: AppTypography.kidsBodyMd.copyWith(
                     fontSize: 11,
-                    color: Colors.white.withValues(alpha: 0.85),
+                    color: cardTextColorOn(gradient).withValues(alpha: 0.85),
                   ),
                 ),
                 const SizedBox(height: 12),

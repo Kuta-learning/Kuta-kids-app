@@ -119,3 +119,15 @@ class AppColors {
   static const Color kgPink = Color(0xFFEF476F);
   static const Color kgGreen = Color(0xFF06D6A0);
 }
+
+/// Readable text color for content placed on a bright kid-card gradient.
+///
+/// Every per-card palette is dark enough for white text except the bright
+/// yellow one (`#FACC15`), which is too light for early readers — dark
+/// amber ink keeps it legible there while every other card stays white.
+Color cardTextColorOn(List<Color> gradient) {
+  if (gradient.isEmpty) return Colors.white;
+  return gradient.first == const Color(0xFFFACC15)
+      ? const Color(0xFF7C2D12) // amber-900 — ~6:1 on bright yellow
+      : Colors.white;
+}
